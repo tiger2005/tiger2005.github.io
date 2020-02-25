@@ -3,7 +3,7 @@
     <meta charset="utf-8"/>
 <meta name="description" content=""/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Tiger2005&#39;s Blog</title>
+<title>UOJ98 上下文无关文法 | Tiger2005&#39;s Blog</title>
 <link rel="shortcut icon" href="https://tiger2005.github.io/favicon.ico?v=1582637526873">
 <link href="https://cdn.bootcss.com/font-awesome/5.11.2/css/all.css" rel="stylesheet">
 <link rel="stylesheet" href="https://tiger2005.github.io/styles/main.css">
@@ -30,11 +30,11 @@
 
 
 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
 </head>
 <body>
 <div class="main gt-bg-theme-color-first">
-    <div class="main-content">
-        <nav class="navbar navbar-expand-lg">
+    <nav class="navbar navbar-expand-lg">
     <div class="navbar-brand">
         <img class="user-avatar" src="/images/avatar.png" alt="头像">
         <div class="site-name gt-c-content-color-first">
@@ -83,114 +83,177 @@
         </div>
     </div>
 </nav>
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    UOJ98 上下文无关文法
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2020-02-25 ·
+                    </time>
+                    
+                </div>
+                <div class="post-content">
+                    <pre><code class="language-cpp">PROGRAM ::= # include &lt; iostream &gt; # include &lt; cstdio &gt; using namespace std ; FUNC_AND_VAR
 
-        <div class="post-list-container">
-    <div class="post-inner">
-        
-            <div class="post gt-bg-theme-color-second">
-                <div class="post-left">
-                    <div>
-                        
-                        <a href="https://tiger2005.github.io/post/uoj98-shang-xia-wen-wu-guan-wen-fa/">
-                            <span class="post-title gt-c-content-color-first">UOJ98 上下文无关文法</span>
-                        </a>
-                    </div>
-                    <div class="gt-post-content post-abstract gt-c-content-color-second">
-                        
-                    </div>
-                    <div class="post-info">
-                        <time class="post-time gt-c-content-color-first">
-                            发布于 · 2020-02-25 ·
-                        </time>
-                        
-                    </div>
-                </div>
-                
-            </div>
-        
-            <div class="post gt-bg-theme-color-second">
-                <div class="post-left">
-                    <div>
-                        
-                        <a href="https://tiger2005.github.io/post/qian-tan-biao-da-shi-de-qiu-zhi-vol3-shi-yong-ast-jin-xing-dai-ma-jie-xi-he-yun-xing/">
-                            <span class="post-title gt-c-content-color-first">浅谈表达式的求值（Vol.3 使用AST进行代码解析和运行）</span>
-                        </a>
-                    </div>
-                    <div class="gt-post-content post-abstract gt-c-content-color-second">
-                        
-                    </div>
-                    <div class="post-info">
-                        <time class="post-time gt-c-content-color-first">
-                            发布于 · 2020-02-25 ·
-                        </time>
-                        
-                            <a href="https://tiger2005.github.io/tag/YAQHDsqSV/" class="post-tag">
-                                # 表达式求值系列
-                            </a>
-                        
-                    </div>
-                </div>
-                
-            </div>
-        
-            <div class="post gt-bg-theme-color-second">
-                <div class="post-left">
-                    <div>
-                        
-                        <a href="https://tiger2005.github.io/post/qian-tan-biao-da-shi-de-qiu-zhi-vol2-jin-jie/">
-                            <span class="post-title gt-c-content-color-first">浅谈表达式的求值（Vol.2 进阶）</span>
-                        </a>
-                    </div>
-                    <div class="gt-post-content post-abstract gt-c-content-color-second">
-                        
-                    </div>
-                    <div class="post-info">
-                        <time class="post-time gt-c-content-color-first">
-                            发布于 · 2020-02-25 ·
-                        </time>
-                        
-                            <a href="https://tiger2005.github.io/tag/YAQHDsqSV/" class="post-tag">
-                                # 表达式求值系列
-                            </a>
-                        
-                    </div>
-                </div>
-                
-            </div>
-        
-            <div class="post gt-bg-theme-color-second">
-                <div class="post-left">
-                    <div>
-                        
-                        <a href="https://tiger2005.github.io/post/qian-tan-biao-da-shi-de-qiu-zhi-vol1-hou-zhui-biao-da-shi/">
-                            <span class="post-title gt-c-content-color-first">浅谈表达式的求值（Vol.1 后缀表达式）</span>
-                        </a>
-                    </div>
-                    <div class="gt-post-content post-abstract gt-c-content-color-second">
-                        
-                    </div>
-                    <div class="post-info">
-                        <time class="post-time gt-c-content-color-first">
-                            发布于 · 2020-02-25 ·
-                        </time>
-                        
-                            <a href="https://tiger2005.github.io/tag/YAQHDsqSV/" class="post-tag">
-                                # 表达式求值系列
-                            </a>
-                        
-                    </div>
-                </div>
-                
-            </div>
-        
-    </div>
-</div>
+FUNC_AND_VAR ::=
+| ε
+| int NAME ( OPTPARAMS ) { STATEMENTS } FUNC_AND_VAR
+| int DEFINEVAR DEFINEVARS ; FUNC_AND_VAR
 
-        <div class="pagination-container">
-    
-    
-</div>
+OPTPARAMS ::=
+| ε
+| int NAME PARAMS
 
+PARAMS ::=
+| ε
+| , int NAME PARAMS
+
+STATEMENTS ::=
+| ε
+| STATEMENT STATEMENTS
+
+STATEMENT ::=
+| EXPRESSION ;
+| { STATEMENTS }
+| int DEFINEVAR DEFINEVARS ;
+| if ( EXPRESSION ) STATEMENT
+| if ( EXPRESSION ) STATEMENT else STATEMENT
+| for ( STATEMENT_IN_FOR ; OPTEXPRESSION ; STATEMENT_IN_FOR ) STATEMENT
+| while ( EXPRESSION ) STATEMENT
+| return EXPRESSION ;
+
+STATEMENT_IN_FOR ::=
+| OPTEXPRESSION
+| int DEFINEVAR DEFINEVARS
+
+OPTEXPRESSION ::=
+| ε
+| EXPRESSION
+
+EXPRESSION ::=
+| UNIT9
+| EXPRESSION &lt;&lt; UNIT9
+| EXPRESSION &gt;&gt; UNIT9
+
+UNIT0 ::=
+| INT_CONSTANT
+| UNIT0 [ EXPRESSION ]
+| ( EXPRESSION )
+| NAME ( OPTARGUS )    // 注：此处的 NAME 是一个函数名
+| NAME    // 注：此处的 NAME 是一个变量名
+| cin
+| cout
+| endl
+
+UNIT1 ::=
+| UNIT0
+| + UNIT1
+| - UNIT1
+| ! UNIT1
+
+UNIT2 ::=
+| UNIT1
+| UNIT2 * UNIT1
+| UNIT2 / UNIT1
+| UNIT2 % UNIT1
+
+UNIT3 ::=
+| UNIT2
+| UNIT3 + UNIT2
+| UNIT3 - UNIT2
+
+UNIT4 ::=
+| UNIT3
+| UNIT4 &lt; UNIT3
+| UNIT4 &lt;= UNIT3
+| UNIT4 &gt; UNIT3
+| UNIT4 &gt;= UNIT3
+
+UNIT5 ::=
+| UNIT4
+| UNIT5 == UNIT4
+| UNIT5 != UNIT4
+
+UNIT6 ::=
+| UNIT5
+| UNIT6 ^ UNIT5
+
+UNIT7 ::=
+| UNIT6
+| UNIT7 &amp;&amp; UNIT6
+
+UNIT8 ::=
+| UNIT7
+| UNIT8 || UNIT7
+
+UNIT9 ::=
+| UNIT8
+| UNIT8 = UNIT9
+
+OPTARGUS ::=
+| ε
+| EXPRESSION ARGUS
+
+ARGUS ::=
+| ε
+| , EXPRESSION ARGUS
+
+DEFINEVARS ::=
+| ε
+| , DEFINEVAR DEFINEVARS
+
+DEFINEVAR ::=
+| NAME
+| DEFINEVAR [ INT_CONSTANT ]
+
+NAME ::= 仅包含大小写字母、数字、下划线的非空字符串，且不以数字开头。
+
+INT_CONSTANT ::= 仅包含数字的非空字符串，且不以0开头，或这个字符串就是0。
+</code></pre>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://tiger2005.github.io/post/qian-tan-biao-da-shi-de-qiu-zhi-vol3-shi-yong-ast-jin-xing-dai-ma-jie-xi-he-yun-xing/" class="post-title gt-a-link">
+                    浅谈表达式的求值（Vol.3 使用AST进行代码解析和运行）
+                </a>
+            </div>
+        
+
+        
+            
+                <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+
+<div id="gitalk-container"></div>
+
+<script>
+
+  var gitalk = new Gitalk({
+    clientID: '2d2e95e6cb08b933f5c3',
+    clientSecret: '55aca31b204ae3ab6ae6d3a1b0740bf7e7dd69c3',
+    repo: 'tiger2005.github.io',
+    owner: 'tiger2005',
+    admin: ['tiger2005'],
+    id: location.pathname,      // Ensure uniqueness and length less than 50
+    distractionFreeMode: false  // Facebook-like distraction free mode
+  })
+
+  gitalk.render('gitalk-container')
+
+</script>
+
+            
+
+            
+        
 
         <div class="site-footer gt-c-content-color-first">
     <div class="slogan gt-c-content-color-first">The author is too busy to write the description .</div>
@@ -223,6 +286,7 @@
 <script>
     hljs.initHighlightingOnLoad()
 </script>
+
 
     </div>
 </div>

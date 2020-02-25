@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://tiger2005.github.io</id>
     <title>Tiger2005&apos;s Blog</title>
-    <updated>2020-02-25T13:21:55.646Z</updated>
+    <updated>2020-02-25T13:32:11.657Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://tiger2005.github.io"/>
     <link rel="self" href="https://tiger2005.github.io/atom.xml"/>
@@ -10,6 +10,131 @@
     <logo>https://tiger2005.github.io/images/avatar.png</logo>
     <icon>https://tiger2005.github.io/favicon.ico</icon>
     <rights>All rights reserved 2020, Tiger2005&apos;s Blog</rights>
+    <entry>
+        <title type="html"><![CDATA[UOJ98 上下文无关文法]]></title>
+        <id>https://tiger2005.github.io/post/uoj98-shang-xia-wen-wu-guan-wen-fa/</id>
+        <link href="https://tiger2005.github.io/post/uoj98-shang-xia-wen-wu-guan-wen-fa/">
+        </link>
+        <updated>2020-02-25T13:31:19.000Z</updated>
+        <content type="html"><![CDATA[<pre><code class="language-cpp">PROGRAM ::= # include &lt; iostream &gt; # include &lt; cstdio &gt; using namespace std ; FUNC_AND_VAR
+
+FUNC_AND_VAR ::=
+| ε
+| int NAME ( OPTPARAMS ) { STATEMENTS } FUNC_AND_VAR
+| int DEFINEVAR DEFINEVARS ; FUNC_AND_VAR
+
+OPTPARAMS ::=
+| ε
+| int NAME PARAMS
+
+PARAMS ::=
+| ε
+| , int NAME PARAMS
+
+STATEMENTS ::=
+| ε
+| STATEMENT STATEMENTS
+
+STATEMENT ::=
+| EXPRESSION ;
+| { STATEMENTS }
+| int DEFINEVAR DEFINEVARS ;
+| if ( EXPRESSION ) STATEMENT
+| if ( EXPRESSION ) STATEMENT else STATEMENT
+| for ( STATEMENT_IN_FOR ; OPTEXPRESSION ; STATEMENT_IN_FOR ) STATEMENT
+| while ( EXPRESSION ) STATEMENT
+| return EXPRESSION ;
+
+STATEMENT_IN_FOR ::=
+| OPTEXPRESSION
+| int DEFINEVAR DEFINEVARS
+
+OPTEXPRESSION ::=
+| ε
+| EXPRESSION
+
+EXPRESSION ::=
+| UNIT9
+| EXPRESSION &lt;&lt; UNIT9
+| EXPRESSION &gt;&gt; UNIT9
+
+UNIT0 ::=
+| INT_CONSTANT
+| UNIT0 [ EXPRESSION ]
+| ( EXPRESSION )
+| NAME ( OPTARGUS )    // 注：此处的 NAME 是一个函数名
+| NAME    // 注：此处的 NAME 是一个变量名
+| cin
+| cout
+| endl
+
+UNIT1 ::=
+| UNIT0
+| + UNIT1
+| - UNIT1
+| ! UNIT1
+
+UNIT2 ::=
+| UNIT1
+| UNIT2 * UNIT1
+| UNIT2 / UNIT1
+| UNIT2 % UNIT1
+
+UNIT3 ::=
+| UNIT2
+| UNIT3 + UNIT2
+| UNIT3 - UNIT2
+
+UNIT4 ::=
+| UNIT3
+| UNIT4 &lt; UNIT3
+| UNIT4 &lt;= UNIT3
+| UNIT4 &gt; UNIT3
+| UNIT4 &gt;= UNIT3
+
+UNIT5 ::=
+| UNIT4
+| UNIT5 == UNIT4
+| UNIT5 != UNIT4
+
+UNIT6 ::=
+| UNIT5
+| UNIT6 ^ UNIT5
+
+UNIT7 ::=
+| UNIT6
+| UNIT7 &amp;&amp; UNIT6
+
+UNIT8 ::=
+| UNIT7
+| UNIT8 || UNIT7
+
+UNIT9 ::=
+| UNIT8
+| UNIT8 = UNIT9
+
+OPTARGUS ::=
+| ε
+| EXPRESSION ARGUS
+
+ARGUS ::=
+| ε
+| , EXPRESSION ARGUS
+
+DEFINEVARS ::=
+| ε
+| , DEFINEVAR DEFINEVARS
+
+DEFINEVAR ::=
+| NAME
+| DEFINEVAR [ INT_CONSTANT ]
+
+NAME ::= 仅包含大小写字母、数字、下划线的非空字符串，且不以数字开头。
+
+INT_CONSTANT ::= 仅包含数字的非空字符串，且不以0开头，或这个字符串就是0。
+</code></pre>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[浅谈表达式的求值（Vol.3 使用AST进行代码解析和运行）]]></title>
         <id>https://tiger2005.github.io/post/qian-tan-biao-da-shi-de-qiu-zhi-vol3-shi-yong-ast-jin-xing-dai-ma-jie-xi-he-yun-xing/</id>
@@ -24,7 +149,7 @@
 <p><strong>前方高能，请务必确认你知道(抽象)表达式树</strong>（<strong>A</strong>bstract <strong>S</strong>yntax <strong>T</strong>ree，简称 AST） 。如果不知道，看看这个系列的 Vol.1 就可以了。</p>
 <p>那么，开始吧。</p>
 <hr>
-<p>首先，我们可以在题目的最后获得一份上下文无关文法，地址如下：<a href="https://www.luogu.com.cn/paste/b7s6rtl0">here</a></p>
+<p>首先，我们可以在题目的最后获得一份上下文无关文法，地址如下：<a href="https://tiger2005.github.io/post/uoj98-shang-xia-wen-wu-guan-wen-fa/">here</a></p>
 <p>这看起来很头疼。我在这里给大家一个入门介绍（P.S.:其他上下文无关文法可能和这个有点不一样，但本质相同）。</p>
 <p>举个例子吧。</p>
 <pre><code class="language-cpp">FUNC_AND_VAR ::=
