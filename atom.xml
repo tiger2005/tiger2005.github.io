@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://tiger2005.github.io</id>
     <title>Tiger2005&apos;s Blog</title>
-    <updated>2020-02-25T13:05:36.893Z</updated>
+    <updated>2020-02-25T13:14:01.949Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://tiger2005.github.io"/>
     <link rel="self" href="https://tiger2005.github.io/atom.xml"/>
@@ -10,4 +10,788 @@
     <logo>https://tiger2005.github.io/images/avatar.png</logo>
     <icon>https://tiger2005.github.io/favicon.ico</icon>
     <rights>All rights reserved 2020, Tiger2005&apos;s Blog</rights>
+    <entry>
+        <title type="html"><![CDATA[浅谈表达式的求值（Vol.3 使用AST进行代码解析和运行）]]></title>
+        <id>https://tiger2005.github.io/post/qian-tan-biao-da-shi-de-qiu-zhi-vol3-shi-yong-ast-jin-xing-dai-ma-jie-xi-he-yun-xing/</id>
+        <link href="https://tiger2005.github.io/post/qian-tan-biao-da-shi-de-qiu-zhi-vol3-shi-yong-ast-jin-xing-dai-ma-jie-xi-he-yun-xing/">
+        </link>
+        <updated>2020-02-25T13:12:04.000Z</updated>
+        <content type="html"><![CDATA[<blockquote>
+<p>哪个OIer不想做出模拟C++编辑器(<a href="http://uoj.ac/problem/98">UOJ 98</a>)呢？</p>
+</blockquote>
+<p>我也有过这个梦想。</p>
+<p>打开这道题的统计，稍稍扫过前10，虽然我们不能像第一一样使用很风骚的方式 AC 这一道题，但是我们可以利用表达式树解决（这个东西虽然慢，但是很鲁棒好想，对于没有接触过这种大模拟的人是不二之选）。</p>
+<p><strong>前方高能，请务必确认你知道(抽象)表达式树</strong>（<strong>A</strong>bstract <strong>S</strong>yntax <strong>T</strong>ree，简称 AST） 。如果不知道，看看这个系列的 Vol.1 就可以了。</p>
+<p>那么，开始吧。</p>
+<hr>
+<p>首先，我们可以在题目的最后获得一份上下文无关文法，地址如下：<a href="https://www.luogu.com.cn/paste/b7s6rtl0">here</a></p>
+<p>这看起来很头疼。我在这里给大家一个入门介绍（P.S.:其他上下文无关文法可能和这个有点不一样，但本质相同）。</p>
+<p>举个例子吧。</p>
+<pre><code class="language-cpp">FUNC_AND_VAR ::=
+| ε
+| int NAME ( OPTPARAMS ) { STATEMENTS } FUNC_AND_VAR
+| int DEFINEVAR DEFINEVARS ; FUNC_AND_VAR
+</code></pre>
+<p>这一块中，<code>::=</code>前面的是符号名字，这里是<code>FUNC_AND_VAR</code></p>
+<p>之后三行是 <code>FUNC_AND_VAR</code> 可能出现的三种情况，相当于 OR 运算。在其他上下文无关文法中会遇到用 <code>|</code> 分开的几种情况，本质是相同的。</p>
+<p>第一行，<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>ε</mi></mrow><annotation encoding="application/x-tex">ε</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">ε</span></span></span></span> 字符代表“空空如也”，也就是空串。</p>
+<p>第二行的意思是，开头是字符串 <code>int</code>，之后一个名字（也就是函数名），括号内装着函数的参数列表，之后大括号内装着一些语句。再然后又是 <code>FUNC_AND_VAR</code>。</p>
+<p>第三行是变量定义，具体在后面一点会讲到。</p>
+<p>在这里用比较形象的方式解释一下为什么后面要加 <code>FUNC_AND_VAR</code>。</p>
+<p>当我们拿到一个 <code>FUNC_AND_VAR</code> 的时候，我们可以选择将它变成一个空串结束分裂，或者将它变成一个函数紧跟着一个 <code>FUNC_AND_VAR</code>，这个 <code>FUNC_AND_VAR</code> 还可以继续分解回到上面的情况……</p>
+<p>由于分裂可以产生一个函数或者一个变量定义。所以， <code>FUNC_AND_VAR</code> 将会产生一个由函数和变量定义组合而成的代码——这就是一份 C++ 代码除去头文件、define等东西之后剩下的了。</p>
+<p>之后看看 <code>DEFINEVARS</code>：</p>
+<pre><code class="language-cpp">DEFINEVARS ::=
+| ε
+| , DEFINEVAR DEFINEVARS
+</code></pre>
+<p>和上面的道理一样，<code>DEFINEVARS</code> 将会产生由一堆<code>, DEFINEVAR</code> 构成的语句。</p>
+<p>那么 <code>int DEFINEVAR DEFINEVARS ;</code> 就是：</p>
+<p>一个字符串 <code>int</code>，之后一个变量，然后是若干个 <code>, [变量]</code>，最后一个<code>;</code>。</p>
+<hr>
+<p>利用上面的信息，我们大概可以读懂上下文无关文法了。</p>
+<p>但是，按照表达式树的概念来说，我们应该找到运算符并让它成为根。</p>
+<p>两者如何兼容呢？</p>
+<p>此时我们有三种思路。</p>
+<h3 id="1类递归">1:类递归</h3>
+<p>假设现在来到了只有 <code>+</code>,<code>-</code> 或者更高运算级的运算符（你可以理解为只有 <code>+,-,*,/,%</code> 的表达式）。</p>
+<p>我们找到对应的文法：</p>
+<pre><code class="language-cpp">UNIT3 ::=
+| UNIT2
+| UNIT3 + UNIT2
+| UNIT3 - UNIT2
+</code></pre>
+<p>我们可以按照这三种情况分别考虑：</p>
+<p>从左到右扫这个序列，跳过括号。</p>
+<p>如果找到 <code>+</code> 或者 <code>-</code>，说明有运算符符合条件2和条件3，那么：</p>
+<p>按照<code>UNIT3 [OPERATOR] UNIT2</code>的规则，等效替换成<code>UNIT2 [OPERATOR] UNIT3</code>（你可以尝试一下，这两个是真的一样的！）之后就可以递归了。</p>
+<p>新建一个该运算符的节点，左儿子连运算符左边的式子用 <code>UNIT2</code> 文法匹配出的 AST，右儿子连运算符右边的式子用 <code>UNIT3</code> 文法匹配出的 AST。这就是这个表达式代表的 AST 了（请多读几遍这句话）。</p>
+<p>之后我们就可以得到伪代码：</p>
+<pre><code class="language-cpp">Unit3 ( string Exp )
+	N = Exp的长度
+	for c from 1 to N
+		if(Exp[c]=='(')
+			寻找和c匹配的括号下标c1
+			c = c1
+			continue
+		else if(c=='+' || c=='-')
+			定义ret为一个新AST
+			将Exp[c]的信息填入ret
+			//这里的信息指的是加号或者减号
+			//这是AST在非叶子节点储存的状态
+			//详见Vol.1 的AST定义
+			ret的第一个参数设为Unit2(Exp在位置c前面的字符串)
+			ret的第二个参数设为Unit3(Exp在位置c后面的字符串)
+			return ret
+	return Unit2(Exp)
+</code></pre>
+<p>P.S.：真正的题目中会遇到中括号，也是直接跳过就行了。或者在对变量处理之后再计算 AST。</p>
+<p>递归的终止状态就是名字、数字等不会延申、数值一定的东西。</p>
+<h3 id="2类分治">2:类分治</h3>
+<p>还是假设现在来到了只有 <code>+</code>,<code>-</code>或者更高运算级的运算符（你可以理解为只有 <code>+,-,*,/,%</code> 的表达式）。</p>
+<p>对应的文法：</p>
+<pre><code class="language-cpp">UNIT3 ::=
+| UNIT2
+| UNIT3 + UNIT2
+| UNIT3 - UNIT2
+</code></pre>
+<p>我们直接分析这段代码的本质。</p>
+<p>这份代码实际上是把字符串按照将要运算（不在括号中）的 <code>+</code> 和 <code>-</code>，之后将代码分成几个小块，在计算值后带回原式子计算。</p>
+<p>在 AST 的眼中就是：将表达式按照将要运算的 <code>+,-</code> 分开，求出每一个小块的 AST，之后用左结合的方式将它们合并在一起（ <code>=</code> 是右结合）</p>
+<p>简单解释一下左结合和右结合：</p>
+<pre><code>a + b + c &lt;-&gt; ( a + b ) + c
+a = b = c &lt;-&gt; a = ( b = c )
+</code></pre>
+<p>之后我们就可以得到伪代码（注：表达式的基础层相当于无括号包围，是我自己定义的说法）：</p>
+<pre><code class="language-cpp">Unit3 ( string Exp )
+	if(在Exp的基础层中没有'+'或'-')
+		return Unit2(Exp)
+	将Exp按照 Exp基础层中的'+'和'-' 分割为若干个字符串
+		并储存在S集合中
+	对S的所有元素运行Unit2函数
+		并储存在ASTSet集合中
+	while(ASTSet.size()&gt;1)
+		从ASTSet中取出第一个元素和第二个元素
+			并设为u1和u2
+		定义v为一个新AST
+		将Exp中u1和u2中间的符号储存在v中
+		//这里的符号就是'+'或者'-'
+		将v的第一个参数设为u1
+		将v的第二个参数设为u2
+		将v储存为ASTSet的第一个元素
+	return ASTSet的唯一一个元素
+</code></pre>
+<h3 id="3中后树">3:中后树</h3>
+<p>实际上就是将表达式转换为后缀表达式，之后变成AST，不需要递归，也不用分治。具体的方法可以参考该系列的 Vol.2，那里已经够清楚了。</p>
+<p>大概画一下最后的树。</p>
+<p>例子1： <code>1+2-3</code></p>
+<pre><code>    -
+   / \
+  +   3
+ / \
+1   2
+</code></pre>
+<p>例子2： <code>a=b=c</code></p>
+<pre><code>  =
+ / \
+a   =
+   / \
+  b   c
+</code></pre>
+<p>在多参数的运算中，使用多叉树（或说，一个指针列表）储存参数，这样就可以将一个运算符所需要的所有参数都储存下来。</p>
+<p>这是在敲完代码后的函数一览（这说明 AST 实际上是很麻烦的，但可以视情况使用	Ctrl+C/V 让自己轻松一点）：</p>
+<figure data-type="image" tabindex="1"><img src="https://cdn.luogu.com.cn/upload/image_hosting/bk9dnqjj.png" alt="" loading="lazy"></figure>
+<hr>
+<p>在你实现的过程中，可能会出现如下问题（这些问题在程序分析里很常见）：</p>
+<p>Q1 : 如何判断 <code>+,-</code> 在表达式中是加减号还是正负号？</p>
+<p>A1 : 这是我在代码中的方法：如果前一个字符是运算符而且非 <code>)</code> 或 <code>]</code>，那么这个字符是正负号，否则为加减号。如果有 hacker 的可以直接告诉我。</p>
+<p>Q2 : 如何将表达式分割成名字、运算符、数字呢？</p>
+<p>A2 : 使用<strong>贪婪匹配</strong>原则。在出现字母和下划线开头说明这是变量，直接匹配到运算符或者空格；在出现数字开头时说明是数字，打法和快读差不多；出现运算符说明就是运算符，往下数一两个字符，看看是不是符合的运算符，取最长的就行了。</p>
+<p>Q3 : 直接使用 struct 赋值会爆炸啊！怎么处理啊……</p>
+<p>A3 : 使用指针。<s>我之前就犯了这个错误还用替换换了半个小时才变成指针……</s></p>
+<hr>
+<p>接下来是设计变量值的储存载体。</p>
+<p>对于一个变量来说，有以下几个重要的参数：</p>
+<p>名字、指针位置、数组维度，以及值。</p>
+<p>我们有两种设计思路。</p>
+<p>一是选择将信息用一个 struct 打包起来，之后用字符串- struct 映射获取。</p>
+<pre><code class="language-cpp">class Var
+	string name
+	int index
+	vector &lt; int &gt; dimensionality
+define MemoryPool as map &lt; string , Var &gt;
+</code></pre>
+<p>二是直接用一个大 struct，里面装着四个映射，分别对应变量的四个参数。</p>
+<pre><code class="language-cpp">class MemoryPool
+	map &lt; string , int &gt; indexMap
+	map &lt; string , vector &lt; int &gt; &gt; dimensionalityMap
+</code></pre>
+<p>具体的值使用 vector 就行了，每一次根据变量大小开对应数量的内存。</p>
+<p>关于多维度值的获取就要有点讲究了。</p>
+<p>假设要取值的参数存在 <code>A</code> 数组，变量维度存在 <code>B</code> 数组，维度大小为 <code>N</code>。</p>
+<p>我们先处理后缀积：<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>C</mi><mi>x</mi></msub><mo>=</mo><msubsup><mi mathvariant="normal">Π</mi><mrow><mi>i</mi><mo>=</mo><mi>x</mi><mo>+</mo><mn>1</mn></mrow><mi>N</mi></msubsup><msub><mi>B</mi><mi>i</mi></msub></mrow><annotation encoding="application/x-tex">C_x=\Pi_{i=x+1}^NB_i</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.07153em;">C</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.151392em;"><span style="top:-2.5500000000000003em;margin-left:-0.07153em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">x</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1.158326em;vertical-align:-0.316995em;"></span><span class="mord"><span class="mord">Π</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8413309999999999em;"><span style="top:-2.441336em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight">i</span><span class="mrel mtight">=</span><span class="mord mathdefault mtight">x</span><span class="mbin mtight">+</span><span class="mord mtight">1</span></span></span></span><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight" style="margin-right:0.10903em;">N</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.316995em;"><span></span></span></span></span></span></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.05017em;">B</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-left:-0.05017em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></p>
+<p>之后需要的值位置就是：<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msubsup><mi mathvariant="normal">Σ</mi><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>N</mi></msubsup><msub><mi>C</mi><mi>i</mi></msub><mo>×</mo><msub><mi>A</mi><mi>i</mi></msub></mrow><annotation encoding="application/x-tex">\Sigma_{i=1}^NC_i \times A_i</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.0999949999999998em;vertical-align:-0.258664em;"></span><span class="mord"><span class="mord">Σ</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8413309999999999em;"><span style="top:-2.441336em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight">i</span><span class="mrel mtight">=</span><span class="mord mtight">1</span></span></span></span><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight" style="margin-right:0.10903em;">N</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.258664em;"><span></span></span></span></span></span></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.07153em;">C</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-left:-0.07153em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault">A</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></p>
+<p>换句话说，我们得到了一个长为 <code>N</code> 的数字 <code>A</code>，每一位遵循 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>B</mi><mi>i</mi></msub></mrow><annotation encoding="application/x-tex">B_i</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.05017em;">B</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-left:-0.05017em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> 进制原则，满 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>B</mi><mi>i</mi></msub></mrow><annotation encoding="application/x-tex">B_i</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.05017em;">B</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-left:-0.05017em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> 进一。我们需要求 <code>A</code> 代表的数字。</p>
+<p>我们在运算后将会得到一个数字，这个加上变量的参数指针后就是一个独一无二的位置了。</p>
+<p>……好像这样讲优点不清楚。我们直接上代码。</p>
+<p>这是我的内存载体中找值的函数：</p>
+<pre><code class="language-cpp">int findNum(string name,vector&lt;int&gt; argv){
+//               Var_name             A
+	int id=index[name],qwq=1;
+	vector&lt;int&gt; rr=info[name];   // B
+	for(int i=argv.size()-1;i&gt;=0;i--){
+		id+=qwq*argv[i];
+		qwq*=rr[i];
+	}
+	return memory[id];
+}
+</code></pre>
+<p>之后是变量的重名。</p>
+<p>在 UOJ98 中，作者很贴心的给了一个条件：</p>
+<blockquote>
+<p>没有函数和变量重名</p>
+</blockquote>
+<p>但这还不够。我们还要处理全局变量和局部变量的重名。</p>
+<p>首先，在运行 AST 求值时，要加入一个内存载体作为参数。这个内存载体在运行函数时新建一个，新建的时候要加入函数的参数。</p>
+<p>其次，找值的时候，要现在局部变量（就是刚刚的内存载体参数）中查看有没有该变量，之后去全局变量查看。</p>
+<p>最后，<code>for</code> 和代码块（就是用 <code>{}</code> 包起来的语句）内的变量在运行结束后要清空（也就是开一个 string 为元素的数组，将变量名存进去，最后在内存载体内直接销毁）。请牢牢记住这一点 <s>，我在这个上面调了大半天</s>。</p>
+<hr>
+<p>变量都不成问题了，最后就是运行求值了。</p>
+<p>这一部分十分简单，但写起来会有一点痛苦。</p>
+<p>这一部分只需要按照当前的 AST 节点的属性分类就行了。</p>
+<p>伪代码显示代码的一部分：</p>
+<pre><code class="language-cpp">runAST ( AST x )
+	if x是数字
+		return x代表的数字
+	if x是加号 then
+		将a设为runAST(x的第一个参数)
+		将b设为runAST(x的第二个参数)
+		return a + b
+	if x是减号 then
+		将a设为runAST(x的第一个参数)
+		将b设为runAST(x的第二个参数)
+		return a - b
+</code></pre>
+<p>这时候，你会遇到最后一个问题。</p>
+<p>Q : 函数返回值怎么处理？</p>
+<p>A : 将函数的返回值设为二元组，一个设定为是否为 <code>return</code> 发出的值，一个设定为有用的值（如果前者为 <code>true</code> 则设为为返回值，为 <code>false</code> 则为运算结果）。传参在遇到 <code>FUNCTION</code> 类型的 AST 节点结束，否则清空临时变量后直接返回。</p>
+<hr>
+<p>最后，拿着辛辛苦苦敲出来的代码，完成最后的调试。</p>
+<p>这个时候你就要有足够的耐心调试了。（笑）</p>
+<p>如果你凭自己成功拿到深绿色答复的话，你已经掌握了一种表达式求值方法，并且可以运用它分析、运行代码。现在，你可以尝试将它改成一个更开放的程序，使得你可以根据客户给出的上下文无关文法和运算法则运行代码，或是自己创造一种编程语言并用这份代码改编成解释器。</p>
+<p>Last Question : 这不是只是讲了一遍 UOJ98 吗？标题党实锤！</p>
+<p>A : 实际上，这道题的解题过程和使用AST进行代码解析和运行的本质一样。这道题的解题流程是：找到上下文无关文法 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>→</mo></mrow><annotation encoding="application/x-tex">\rightarrow</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.36687em;vertical-align:0em;"></span><span class="mrel">→</span></span></span></span> 根据文法写出 AST 构造函数 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>→</mo></mrow><annotation encoding="application/x-tex">\rightarrow</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.36687em;vertical-align:0em;"></span><span class="mrel">→</span></span></span></span> 通过 AST 节点类型计算、修改值。实际上，表达式可以通过一个上下文无关文法构造，根据这个方法也可以计算表达式的值。</p>
+<p>虽然在前面的学习中可以用后缀表达式快速计算出表达式的值，但是一些区间表达式求值的题目上就可能需要 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>O</mi><mo>(</mo><msup><mi>n</mi><mn>2</mn></msup><mo>)</mo></mrow><annotation encoding="application/x-tex">O(n^2)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.064108em;vertical-align:-0.25em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord"><span class="mord mathdefault">n</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mclose">)</span></span></span></span> 的复杂度。但是，在 AST 进行树高处理使得表达式树的高度在 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>O</mi><mo>(</mo><mi>log</mi><mo>⁡</mo><mo>(</mo><mi>n</mi><mo>)</mo><mo>)</mo></mrow><annotation encoding="application/x-tex">O(\log(n))</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mop">lo<span style="margin-right:0.01389em;">g</span></span><span class="mopen">(</span><span class="mord mathdefault">n</span><span class="mclose">)</span><span class="mclose">)</span></span></span></span> 的复杂度后，可以只用 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>O</mi><mo>(</mo><mi>n</mi><mi>log</mi><mo>⁡</mo><mo>(</mo><mi>n</mi><mo>)</mo><mo>)</mo></mrow><annotation encoding="application/x-tex">O(n\log(n))</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord mathdefault">n</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop">lo<span style="margin-right:0.01389em;">g</span></span><span class="mopen">(</span><span class="mord mathdefault">n</span><span class="mclose">)</span><span class="mclose">)</span></span></span></span> 的复杂度解决问题。</p>
+<p>下一次是简单正则表达式和带输出类有限状态机，是一种快速、灵活计算 AST 的方法，可以学习一下 Trie，理解 Trie 随字符而定的状态转移。</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[浅谈表达式的求值（Vol.2 进阶）]]></title>
+        <id>https://tiger2005.github.io/post/qian-tan-biao-da-shi-de-qiu-zhi-vol2-jin-jie/</id>
+        <link href="https://tiger2005.github.io/post/qian-tan-biao-da-shi-de-qiu-zhi-vol2-jin-jie/">
+        </link>
+        <updated>2020-02-25T13:11:02.000Z</updated>
+        <content type="html"><![CDATA[<p><a href="https://www.luogu.org/blog/tiger2005/qian-tan-biao-da-shi-di-qiu-zhi-hou-zhui-biao-da-shi-post"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mstyle mathcolor="red"><mrow><mi>W</mi><mi>a</mi><mi>r</mi><mi>n</mi><mi>i</mi><mi>n</mi><mi>g</mi></mrow></mstyle></mrow><annotation encoding="application/x-tex">\color{red}{Warning}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8777699999999999em;vertical-align:-0.19444em;"></span><span class="mord" style="color:red;"><span class="mord mathdefault" style="margin-right:0.13889em;color:red;">W</span><span class="mord mathdefault" style="color:red;">a</span><span class="mord mathdefault" style="margin-right:0.02778em;color:red;">r</span><span class="mord mathdefault" style="color:red;">n</span><span class="mord mathdefault" style="color:red;">i</span><span class="mord mathdefault" style="color:red;">n</span><span class="mord mathdefault" style="margin-right:0.03588em;color:red;">g</span></span></span></span></span></a></p>
+<p>在观看本博客之前，请保证自己理解了表达式的三种表达方式。</p>
+<p>本文旨在让大家更深层次的了解表达式，基础的知识就是上方的链接中所写的。所以，在了解后缀表达式的运算原理之后，我将不会讲述类似的前缀表达式的运算原理。</p>
+<pre><code>Change Logs:
+2019-10-27 14:01 修改：加入中缀表达式更快算法的简析
+2019-10-27 13:44 修改：加入&quot;知二推一&quot;出现的意义(个人之前没有表述清楚)
+2019-10-19 23:08 初稿
+</code></pre>
+<h2 id="text0-目录">$ \text{0 目录} $</h2>
+<p><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mtext>¶ 0 目录</mtext></mrow><annotation encoding="application/x-tex">\text{¶ 0 目录}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord text"><span class="mord">¶ 0 </span><span class="mord cjk_fallback">目录</span></span></span></span></span></p>
+<p><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mtext>¶ 1 浅谈后缀表达式的还原</mtext></mrow><annotation encoding="application/x-tex">\text{¶ 1 浅谈后缀表达式的还原}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord text"><span class="mord">¶ 1 </span><span class="mord cjk_fallback">浅谈后缀表达式的还原</span></span></span></span></span></p>
+<p><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mtext>¶ 2 前缀表达式介绍</mtext></mrow><annotation encoding="application/x-tex">\text{¶ 2 前缀表达式介绍}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord text"><span class="mord">¶ 2 </span><span class="mord cjk_fallback">前缀表达式介绍</span></span></span></span></span></p>
+<p><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mtext>                ¶ I 简单介绍</mtext></mrow><annotation encoding="application/x-tex">\text{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ¶ I 简单介绍}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord text"><span class="mord">                ¶ I </span><span class="mord cjk_fallback">简单介绍</span></span></span></span></span></p>
+<p><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mtext>                ¶ II 构造方法和还原方法</mtext></mrow><annotation encoding="application/x-tex">\text{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ¶ II 构造方法和还原方法}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord text"><span class="mord">                ¶ II </span><span class="mord cjk_fallback">构造方法和还原方法</span></span></span></span></span></p>
+<p><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mtext>                ¶ III 好玩的特性</mtext></mrow><annotation encoding="application/x-tex">\text{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ¶ III 好玩的特性}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord text"><span class="mord">                ¶ III </span><span class="mord cjk_fallback">好玩的特性</span></span></span></span></span></p>
+<p><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mtext>¶ 3 前中后缀表达式区别和联系</mtext></mrow><annotation encoding="application/x-tex">\text{¶ 3 前中后缀表达式区别和联系}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord text"><span class="mord">¶ 3 </span><span class="mord cjk_fallback">前中后缀表达式区别和联系</span></span></span></span></span></p>
+<p><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mtext>¶ 4 拓展</mtext></mrow><annotation encoding="application/x-tex">\text{¶ 4 拓展}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord text"><span class="mord">¶ 4 </span><span class="mord cjk_fallback">拓展</span></span></span></span></span></p>
+<p><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mtext>¶ 5 总结</mtext></mrow><annotation encoding="application/x-tex">\text{¶ 5 总结}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord text"><span class="mord">¶ 5 </span><span class="mord cjk_fallback">总结</span></span></span></span></span></p>
+<h2 id="text1-浅谈后缀表达式的还原">$ \text{1 浅谈后缀表达式的还原} $</h2>
+<p>我们可以使用后缀表达式来构造表达式树</p>
+<p>我们想一下后缀表达式的计算</p>
+<pre><code>后序的时候，假设有一个排列如下：
+数字1 数字2 计算符
+那么这三个数可以被数字1[计算符]数字2代替（就是一次计算）
+</code></pre>
+<p>我们再回头看一看表达式树的计算</p>
+<pre><code>f(左儿子)[now所代表的运算符]f(右儿子)
+</code></pre>
+<p>所以，我们可以想到一种非常像后缀表达式计算的方法：</p>
+<p>定义一种树，支持将几棵树用另一个顶点作为根合并起来，就像这样：</p>
+<pre><code>           *
+ +   -
+/ \ / \
+1 2 3 4
+
+-------------
+
+    *   
+   / \
+  +   -
+ / \ / \
+ 1 2 3 4
+</code></pre>
+<p>之后我们用一个栈S，利用以上性质计算：</p>
+<pre><code>inp -&gt; 后缀表达式
+struct Tree{...}
+stack&lt;Tree&gt; S
+for i from 1 to N
+    if(inp[i]是数字)	定义一个只有该数字的Tree，并加入到栈中
+    else	创建一个只有这个字符的Tree，之后将栈顶的两棵树以它为根合并
+</code></pre>
+<p>同时，我们也可以用字符串代替树，那么树的合并相当于字符串拼接，最后得到的是没有括号的中缀表达式。</p>
+<p>如果你想加括号的话，不妨利用以下文字，自己思考一下。</p>
+<pre><code>中序遍历就是原式，但是我们通过运算优先级建树，这时候受到括号的影响，计算的优先级会改变（括号里面的优先）。
+判断的方式很简单。
+就比如除号，它在树中左边是加号，运算符优先级比它小，但是竟然先被计算，所以，加号所在子树左右应该加上括号。
+</code></pre>
+<p>我们将模拟后缀表达式转中缀表达式帮助你了解，用表达式树的方法同理。</p>
+<pre><code>inp &gt; 6 2 3 * + 4 / 5 -
+扫到6
+Stack &gt; 6
+扫到2
+Stack &gt; 6 2
+扫到3
+Stack &gt; 6 2 3
+扫到*
+&quot;2&quot; + &quot;*&quot; + &quot;3&quot; = &quot;(2*3)&quot;
+Stack &gt; 6 (2*3)
+扫到+
+&quot;6&quot; + &quot;+&quot; + &quot;(2*3)&quot; = &quot;(6+(2*3))&quot;
+Stack &gt; (6+(2*3))
+扫到4
+Stack &gt; (6+(2*3)) 4
+扫到/
+&quot;(6+(2*3))&quot; + &quot;/&quot; + &quot;4&quot; = &quot;((6+(2*3))/4)&quot;
+Stack &gt; ((6+(2*3))/4)
+扫到5
+Stack &gt; ((6+(2*3))/4) 5
+扫到-
+((6+(2*3))/4)&quot; + &quot;-&quot; + &quot;5&quot; = &quot;((((6+(2*3))/4)-5)&quot;
+Stack &gt; ((((6+(2*3))/4)-5)
+</code></pre>
+<h2 id="text2-前缀表达式介绍"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mtext>2 前缀表达式介绍</mtext></mrow><annotation encoding="application/x-tex">\text{2 前缀表达式介绍}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord text"><span class="mord">2 </span><span class="mord cjk_fallback">前缀表达式介绍</span></span></span></span></span></h2>
+<p><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>→</mo><mtext>I 简单介绍</mtext></mrow><annotation encoding="application/x-tex">\rightarrow\text{I 简单介绍}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.36687em;vertical-align:0em;"></span><span class="mrel">→</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord text"><span class="mord">I </span><span class="mord cjk_fallback">简单介绍</span></span></span></span></span></p>
+<p>前缀表达式，类似于后缀表达式，是表达式的表达方式之一。</p>
+<p>和后缀表达式相近，前缀表达式&quot;将运算符写在前面&quot;，从而可以加快运行速度(和后缀表达式一样，在某种枚举顺序下，只使用出栈和入栈，加上基础计算，就可以在<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>O</mi><mo>(</mo><mi>n</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">O(n)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord mathdefault">n</span><span class="mclose">)</span></span></span></span>的复杂度下运行出结果)。</p>
+<p>打个比方，</p>
+<figure data-type="image" tabindex="1"><img src="https://i.loli.net/2019/04/24/5cc03aaf8bcf5.png" alt="" loading="lazy"></figure>
+<p>中，前缀表达式就是<code>- / + 6 * 2 3 4 5</code></p>
+<p><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>→</mo><mtext>II 构造方法和还原方法</mtext></mrow><annotation encoding="application/x-tex">\rightarrow\text{II 构造方法和还原方法}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.36687em;vertical-align:0em;"></span><span class="mrel">→</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord text"><span class="mord">II </span><span class="mord cjk_fallback">构造方法和还原方法</span></span></span></span></span></p>
+<p>刚才讲过，和后缀表达式一样，前缀表达式也支持<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>O</mi><mo>(</mo><mi>n</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">O(n)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord mathdefault">n</span><span class="mclose">)</span></span></span></span>的计算和还原。区别如下</p>
+<p><code>&gt;</code> 后缀表达式的枚举是从左到右，前缀表达式是从右到左</p>
+<p><code>&gt;</code> 后缀表达式的计算是[次顶元素][运算符][栈顶元素]，而前缀表达式的计算是[栈顶元素][运算符][次顶元素]</p>
+<p>其他的和后缀表达式没有区别。但是，由于从左到右判断代码明显更好些（举例：没有人会选择将已知字符串转为数字的时候倒着处理，这样还需要计算10的幂次），所以个人还是推荐使用后缀表达式处理方法。</p>
+<p>......算了，还是给一下运算举例吧。</p>
+<pre><code>- / + 6 * 2 3 4 5
+扫到5，加入栈
++------------
+| 5|  |  |  |
++------------
+扫到4，加入栈
++------------
+| 5| 4|  |  |
++------------
+扫到3，加入栈
++------------
+| 5| 4| 3|  |
++------------
+扫到2，加入栈
++------------
+| 5| 4| 3| 2|
++------------
+扫到*，计算2*3，返回6，把6加入栈中
++------------
+| 5| 4| 6|  |
++------------
+扫到6，加入栈
++------------
+| 5| 4| 6| 6|
++------------
+扫到+，计算6+6，返回12，把12加入栈中
++------------
+| 5| 4|12|  |
++------------
+扫到/，计算12/4，返回3，把3加入栈中
++------------
+| 5| 3|  |  |
++------------
+扫到-，计算3-5，返回-2，把-2加入栈中
++------------
+|-2|  |  |  |
++------------
+结束，返回-2
+</code></pre>
+<p><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>→</mo><mtext>III 好玩的特性</mtext></mrow><annotation encoding="application/x-tex">\rightarrow\text{III 好玩的特性}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.36687em;vertical-align:0em;"></span><span class="mrel">→</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord text"><span class="mord">III </span><span class="mord cjk_fallback">好玩的特性</span></span></span></span></span></p>
+<p>我们不妨将前缀表达式的括号显示，那么就会出现以下事情：</p>
+<pre><code>-(/(+(6,*(2,3))4),5)
+</code></pre>
+<p>这就像一个个函数一样了，也就是说，一个表达式</p>
+<pre><code>minus(divide(plus(6,multiply(2,3))4),5)
+</code></pre>
+<p>可以只通过去括号和逗号就可以转换为前缀表达式！</p>
+<p>所以，That's it ! 我们就可以将一个只由函数和数字组合的表达式只通过拆括号和去逗号的方式转为前缀表达式，在循环运算的时候甚至可以直接跳过这些省略的字符。</p>
+<p>因此，我们就找到了一种全新的表达式计算方法：</p>
+<p>对于每一个参数数量确定的函数，当参数为组合式的时候，递归处理前缀表达式；是数字的时候直接跳过。由此，我们就可以将一个表达式转换为前缀表达式，从而解决问题。</p>
+<p>为什么说数量确定？数量不确定的时候，函数的前缀表达式和其他的表达式一拼起来就会使得表达式出现歧义。</p>
+<p>这种方法正好适用于<a href="https://www.luogu.org/problem/UVA12666">这道题</a>，感兴趣的人可以去做一下。</p>
+<h2 id="text3-前中后缀表达式区别和联系"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mtext>3 前中后缀表达式区别和联系</mtext></mrow><annotation encoding="application/x-tex">\text{3 前中后缀表达式区别和联系}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord text"><span class="mord">3 </span><span class="mord cjk_fallback">前中后缀表达式区别和联系</span></span></span></span></span></h2>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">特性</th>
+<th style="text-align:center">中缀表达式</th>
+<th style="text-align:center">前缀表达式</th>
+<th style="text-align:center">后缀表达式</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">有无括号</td>
+<td style="text-align:center">有</td>
+<td style="text-align:center">无</td>
+<td style="text-align:center">无</td>
+</tr>
+<tr>
+<td style="text-align:center">运算方法</td>
+<td style="text-align:center">回溯</td>
+<td style="text-align:center">正向枚举</td>
+<td style="text-align:center">反向枚举</td>
+</tr>
+<tr>
+<td style="text-align:center">是否使用字符优先级</td>
+<td style="text-align:center">是</td>
+<td style="text-align:center">否</td>
+<td style="text-align:center">否</td>
+</tr>
+<tr>
+<td style="text-align:center">转换(还原)</td>
+<td style="text-align:center">单调栈</td>
+<td style="text-align:center">树型数据结构</td>
+<td style="text-align:center">树型数据结构</td>
+</tr>
+<tr>
+<td style="text-align:center">计算时间</td>
+<td style="text-align:center">一般<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>O</mi><mo>(</mo><msup><mi>n</mi><mn>2</mn></msup><mo>)</mo></mrow><annotation encoding="application/x-tex">O(n^2)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.064108em;vertical-align:-0.25em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord"><span class="mord mathdefault">n</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mclose">)</span></span></span></span></td>
+<td style="text-align:center"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>O</mi><mo>(</mo><mi>n</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">O(n)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord mathdefault">n</span><span class="mclose">)</span></span></span></span></td>
+<td style="text-align:center"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>O</mi><mo>(</mo><mi>n</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">O(n)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord mathdefault">n</span><span class="mclose">)</span></span></span></span></td>
+</tr>
+<tr>
+<td style="text-align:center">电脑解析难度</td>
+<td style="text-align:center">高</td>
+<td style="text-align:center">低</td>
+<td style="text-align:center">低</td>
+</tr>
+<tr>
+<td style="text-align:center">别名</td>
+<td style="text-align:center">中缀记法</td>
+<td style="text-align:center">波兰表达式</td>
+<td style="text-align:center">逆波兰表达式</td>
+</tr>
+</tbody>
+</table>
+<h2 id="text4-拓展"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mtext>4 拓展</mtext></mrow><annotation encoding="application/x-tex">\text{4 拓展}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord text"><span class="mord">4 </span><span class="mord cjk_fallback">拓展</span></span></span></span></span></h2>
+<p>由于之前BB了这么多关于表达式的转换，而且在中缀表达式去掉括号之后这三种表达式就是表达式树的三种基础遍历方式，所以这里利用三种表达式表示法的互相转换和还原解决知二推一的问题。由于死记硬背这些定理不好记住，所以建议和之前介绍的表达式求值和还原法理解。</p>
+<p>前中推后：顺序枚举前缀表达式，获取它在中缀表达式中的位置，从而将中缀表达式分成两半，在左右分别继续上面的操作，直到整棵表达式树的形态确定。后中推前同理，只需倒着枚举。</p>
+<p>前后推中：顺序枚举前缀表达式，获取它在后缀表达式中的位置，可以知道，后缀表达式中它的位置到它父亲的位置就是它父亲的右半子树的后缀表达式，以此类推。</p>
+<p>实际上，除了前传开头提到的中缀表达式计算方法，中缀表达式是存在<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>O</mi><mo>(</mo><mi>n</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">O(n)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord mathdefault">n</span><span class="mclose">)</span></span></span></span>的计算方法的，在这里简单一提。</p>
+<p>在这里，我们可以预先求出括号的匹配关系，之后，在一串表达式中，我们可以使用跳跃括号的方式找到本表达式中最后计算的那些符号(注意，这几个符号的运算优先级应当一样)，将表达式劈成几部分后分别计算这几个表达式，就这样递归下去。由于每一次我们都跳过了括号，所以运算复杂度是<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>O</mi><mo>(</mo><mi>n</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">O(n)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord mathdefault">n</span><span class="mclose">)</span></span></span></span>的，但是常数随优先级个数而变化(想一想，为什么)。</p>
+<p>当然，构造巴科斯范式并使用递归下降法可以让速度达到一个新的高度，这些将会在之后讲到。</p>
+<h2 id="text5-总结">$ \text{5 总结} $</h2>
+<p>在消化了这篇文章以及它的<a href="https://www.luogu.org/blog/tiger2005/qian-tan-biao-da-shi-di-qiu-zhi-hou-zhui-biao-da-shi-post">前传</a>后，实际上简单的表达式的求值和转换都不是问题了。同时，你也可以将其使用在自创高级语言编译器的解析过程当中，大大加快处理的速度。</p>
+<p>最后，完结撒花!!!<code>*★,°*:.☆(￣▽￣)/$:*.°★* 。</code></p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[浅谈表达式的求值（Vol.1 后缀表达式）]]></title>
+        <id>https://tiger2005.github.io/post/qian-tan-biao-da-shi-de-qiu-zhi-vol1-hou-zhui-biao-da-shi/</id>
+        <link href="https://tiger2005.github.io/post/qian-tan-biao-da-shi-de-qiu-zhi-vol1-hou-zhui-biao-da-shi/">
+        </link>
+        <updated>2020-02-25T13:09:53.000Z</updated>
+        <content type="html"><![CDATA[<h1 id="0序言">0:序言</h1>
+<blockquote>
+<p>我们在做一些题目的时候，需要求一些恶心的表达式的值。那么，我们需要用一些快一些的方法求值。</p>
+</blockquote>
+<p>我们能最先想到的就是暴力求值，也就是：</p>
+<p>一步步将可运算的地方运算好，最后剩下的就是表达式的值了。</p>
+<p>举个栗子：</p>
+<pre><code class="language-cpp"> (6+2*3)/4-5
+=(6+6)/4-5
+=(12)/4-5
+=3-5
+=-2
+</code></pre>
+<p>但是，这种方法很容易被卡掉。例如，<code>1+(2+(3+(4+(5+6))))</code>这个式子中，每一次可以执行的符号只有最里面括号的值（因为其他运算符都因为右边的运算没有结果而不能被运算）</p>
+<p>这个时候时间复杂度降到了<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>O</mi><mo>(</mo><msup><mi>n</mi><mn>2</mn></msup><mo>)</mo></mrow><annotation encoding="application/x-tex">O(n^2)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.064108em;vertical-align:-0.25em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord"><span class="mord mathdefault">n</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mclose">)</span></span></span></span>，非常慢。</p>
+<p>这个时候，我们就要想一些更快的方法。</p>
+<h1 id="1表达式的树">1:表达式的树</h1>
+<p>实际上，我们可以将整个表达式看成一个二叉树，每个非叶子节点上表示的是一个运算符，左右为这个运算符在原来的表达式中左右的值。叶子节点表示的是一个值。</p>
+<p>在计算时，我们可以用DFS的方法，在一个节点处先搜索左右儿子代表的值，之后计算。</p>
+<p>伪代码如下：</p>
+<pre><code>f() 参数：一个整数。返回值：一个整数。
+f(now) 
+    if(now是叶子节点)	return 这个叶子节点代表的值
+    return f(左儿子)[now所代表的运算符]f(右儿子)
+</code></pre>
+<p>我们还可以这么看：</p>
+<p>很多个数排在一起。每一次，两个相邻的数通过某种方式（就是根代表的运算符）合并成一个数，最后只剩下一个数，这就是表达式的值。</p>
+<p>举个例子：</p>
+<pre><code>(6+2*3)/4-5
+</code></pre>
+<figure data-type="image" tabindex="1"><img src="https://i.loli.net/2019/04/24/5cc03aaf8bcf5.png" alt="" loading="lazy"></figure>
+<p>合并过程长这样：</p>
+<pre><code>6 2 3 4 5
+6 6 4 5
+12 4 5
+3 5
+-2
+</code></pre>
+<p>过程如下：</p>
+<figure data-type="image" tabindex="2"><img src="https://i.loli.net/2019/04/24/5cc03aaf97d1a.png" alt="" loading="lazy"></figure>
+<figure data-type="image" tabindex="3"><img src="https://i.loli.net/2019/04/24/5cc03aed4b713.png" alt="" loading="lazy"></figure>
+<figure data-type="image" tabindex="4"><img src="https://i.loli.net/2019/04/24/5cc03b3118208.png" alt="" loading="lazy"></figure>
+<figure data-type="image" tabindex="5"><img src="https://i.loli.net/2019/04/24/5cc03b49e03f8.png" alt="" loading="lazy"></figure>
+<p>我们通过以下方式处理字符串（又是伪代码）：</p>
+<pre><code>tr() 参数：字符串S 返回：一棵树
+tr(S)
+    if(S只包含一个数字)
+    	return 以这个数字为根的树（只有一个节点）
+    找到最后运行的运算符X
+    将X设为这个树的根
+    将左儿子设为tr(S以X为分界线分开的左边部分)
+    右儿子设为tr(S以X为分界线分开的右边部分)
+    return 这个树
+</code></pre>
+<p>最后运行的运算符很好找，只要找这个表达式最外层的运算符中优先级最小的就好（不会优先级的出门左转）</p>
+<p>有多个只用取其中一个，这只会影响计算的先后，不影响结果。</p>
+<p>很棒。所以我们找到了另一个求表达式值的方法——</p>
+<p>转换为树的时候，通过回溯计算值。</p>
+<p>但是，很可惜。这个方法中，我们每一次构造的时候，要扫一次字符串并取出一个计算符。还是能用<code>1+(2+(3+(4+(5+6))))</code>这个例子卡成<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>O</mi><mo>(</mo><msup><mi>n</mi><mn>2</mn></msup><mo>)</mo></mrow><annotation encoding="application/x-tex">O(n^2)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.064108em;vertical-align:-0.25em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord"><span class="mord mathdefault">n</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mclose">)</span></span></span></span>。</p>
+<p>那怎么办？</p>
+<h1 id="2表达式的变形">2:表达式的变形</h1>
+<p>我们想到，一个树有它的三种遍历方式：<code>[前|中|后]序遍历</code></p>
+<p>我们把刚才这个树遍历：</p>
+<pre><code>前：- / + 6 * 2 3 4 5
+中：6 + 2 * 3 / 4 - 5
+后：6 2 3 * + 4 / 5 -
+</code></pre>
+<p>中序遍历就是原式， <strong>但是</strong> 我们通过运算优先级建树，这时候受到括号的影响，计算的优先级会改变（括号里面的优先）。</p>
+<p>判断的方式很简单。</p>
+<p>就比如除号，它在树中左边是加号，运算符优先级比它小，但是竟然先被计算，所以，加号所在子树左右应该加上括号。</p>
+<p>我们盯着<code>[前|后]序遍历</code>看。</p>
+<p>前序的时候，假设有一个排列如下：</p>
+<pre><code>计算符 数字1 数字2
+</code></pre>
+<p>那么这三个数可以被<code>数字1[计算符]数字2</code>代替（就是一次计算）</p>
+<p>后序的时候，假设有一个排列如下：</p>
+<pre><code>数字1 数字2 计算符
+</code></pre>
+<p>那么这三个数可以被<code>数字1[计算符]数字2</code>代替（就是一次计算）</p>
+<p>这个性质由前后序遍历中根不在左右子树中间而来。</p>
+<p>由于后序遍历的结果可以用<code>for</code>或<code>in range</code>计算（利用栈即可），我们用后序遍历的结果计算。</p>
+<blockquote>
+<p><code>P.S. :表达式的[前|中|后]序遍历有对应的名字：前缀表达式（波兰表达式），中缀表达式，后缀表达式（逆波兰表达式）</code></p>
+</blockquote>
+<h1 id="3求后缀表达式的简便方法">3:求后缀表达式的简便方法</h1>
+<p>我们旨在用<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>O</mi><mo>(</mo><mi>n</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">O(n)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord mathdefault">n</span><span class="mclose">)</span></span></span></span>的时间求出表达式的值，所以我们只能遍历表达式常数次。</p>
+<p>我们先抓住<code>1*2+3</code>这个栗子看，后缀表达式为<code>1 2 * 3 +</code></p>
+<p>我们再抓住<code>1+2*3</code>这个栗子看，后缀表达式为<code>1 2 3 * +</code></p>
+<p>我们从左往右遍历这个式子，我们发现，这两个式子中，</p>
+<p>在遍历到第二个运算符的时候，两者的操作不一样——一个将<code>*</code>加入后缀表达式，一个不是。</p>
+<p>这仅仅是<code>*</code>和<code>+</code>的优先级有差异。</p>
+<p>所以，我们实际上就是要维护一个运算优先级非降的运算符序列，在添加运算符的时候，我们仅仅需要在这个序列中去掉后面的元素，让这个序列添加这个运算符的时候依然有序。</p>
+<p>当你维护一个单调的序列的时候，你能想到什么？</p>
+<h3 id="单调栈">单调栈！</h3>
+<p>我们可以想到，当扫到一个数字的时候，直接加到后缀表达式里面，扫到一个运算符的时候，就把它丢到一个单调栈里面，并且这个单调栈维护的是运算优先级非降的一个字符列表。</p>
+<p>也就是说：</p>
+<pre><code>* s[N],ret[N];
+stack&lt;char&gt; pri;
+for i from 1 to N
+    if(s[i]是一个数)	直接加到ret中
+    else
+        while(pri顶部字符的优先级大于s[i]的优先级)
+            把pri顶端的字符加到ret里面，之后从pri里面弹出
+        把s[i]加到pri里面
+while(pri里面还有字符)
+	把pri顶端的字符加到ret里面，之后从pri里面弹出
+ret -&gt; 后缀表达式
+</code></pre>
+<p>好了，我们已经处理完了不含括号的时候后缀表达式的计算。</p>
+<p>那么，当表达式有了括号的时候，怎么办呢？</p>
+<p>我们想到，括号里面的计算符的计算优先级比外面的高，所以我们可以这样处理：</p>
+<pre><code>碰到(时，直接加入到栈（不进行任何弹出操作），并设置(的优先级为负无穷（这样能保证(不被弹出）
+碰到)时，从pri疯狂弹出字符，直到碰到(，把(弹出
+</code></pre>
+<p>为什么要疯狂弹出呢？</p>
+<p>很简单，我们要计算完括号里面的计算才能往下走，所以我们需要把括号里面的计算符先弹出，在后缀表达式的计算中相当于计算完括号里面的值。</p>
+<p>所以，真正的后缀表达式的寻找方法应该是这样</p>
+<pre><code>* s[N],ret[N];
+stack&lt;char&gt; pri;
+for i from 1 to N
+    if(s[i]是一个数)	直接加到ret中
+    else if(s[i]是'(')	直接加到pri中
+    else if(s[i]是')')
+    	while(pri顶部字符不是'(')
+            把pri顶端的字符加到ret里面，之后从pri里面弹出
+        从pri里面弹出'('
+    else
+        while(pri顶部字符的优先级大于s[i]的优先级)
+            把pri顶端的字符加到ret里面，之后从pri里面弹出
+        把s[i]加到pri里面
+while(pri里面还有字符)
+	把pri顶端的字符加到ret里面，之后从pri里面弹出
+ret -&gt; 后缀表达式
+</code></pre>
+<p>模拟<code>(6+2*3)/4-5</code>的计算</p>
+<pre><code>扫到(：直接弹入pri。
+---
+ret : 
+pri : (
+---
+扫到6：直接加入ret。
+---
+ret : 6
+pri : (
+---
+扫到+：加入到pri，因为(的优先级更小，所以没有弹出。
+---
+ret : 6
+pri : ( +
+---
+扫到2：直接加入ret。
+---
+ret : 6 2
+pri : ( +
+---
+扫到*：加入到pri，因为+的优先级更小，所以没有弹出。
+---
+ret : 6 2
+pri : ( + *
+---
+扫到3：直接加入到ret。
+---
+ret : 6 2 3
+pri : ( + *
+---
+扫到)：将pri中的字符疯狂弹出，直到碰到(，将(弹出。
+---
+ret : 6 2 3 * +
+pri : 
+---
+扫到/：直接加入到pri（pri是空的）。
+---
+ret : 6 2 3 * +
+pri : /
+---
+扫到4：直接加到ret。
+---
+ret : 6 2 3 * + 4
+pri : /
+---
+扫到-：加入到pri，因为/的优先级更大，将/弹出并加入到ret。
+---
+ret : 6 2 3 * + 4 /
+pri : -
+---
+扫到5：直接加入到ret。
+---
+ret : 6 2 3 * + 4 / 5
+pri : -
+---
+清空pri
+ret : 6 2 3 * + 4 / 5 -
+</code></pre>
+<p>因为计算的过程比较简单，所以我相信模拟可以让你们明白。</p>
+<p>模拟计算过程：</p>
+<pre><code>扫到6，加入栈
++------------
+| 6|  |  |  |
++------------
+扫到2，加入栈
++------------
+| 6| 2|  |  |
++------------
+扫到3，加入栈
++------------
+| 6| 2| 3|  |
++------------
+扫到*，计算2*3，返回6，把6加入栈中
++------------
+| 6| 6|  |  |
++------------
+扫到+，计算6+6，返回12，把12加入栈中
++------------
+|12|  |  |  |
++------------
+扫到4，加入栈
++------------
+|12| 4|  |  |
++------------
+扫到/，计算12/4，返回3，把3加入栈中
++------------
+| 3|  |  |  |
++------------
+扫到5，加入栈
++------------
+| 3| 5|  |  |
++------------
+扫到-，计算3-5，返回-2，把-2加入栈中
++------------
+|-2|  |  |  |
++------------
+结束，返回-2
+</code></pre>
+<p>所以，表达式的计算成功降到了<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>O</mi><mo>(</mo><mi>n</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">O(n)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord mathdefault">n</span><span class="mclose">)</span></span></span></span></p>
+<h1 id="4例题">4:例题</h1>
+<p><a href="https://www.luogu.org/problemnew/show/P1175">P1175 表达式的转换</a></p>
+<p><strong>注意</strong> ： 这道题中，pri维护的是升序（不能等于），每次运算需要找到第一个字符并计算。</p>
+<pre><code class="language-cpp">#include&lt;cstdio&gt;
+#include&lt;cstring&gt;
+#include&lt;stack&gt;
+#include&lt;algorithm&gt;
+#include&lt;cmath&gt;
+using namespace std;
+//8 - 18行均为运算符的优先级比较 
+int ope(char q){
+    if(q=='(')  return -1;
+    if(q=='+')  return 0;
+    if(q=='-')  return 0;
+    if(q=='*')  return 1;
+    if(q=='/')  return 1;
+    if(q=='^')	return 2;
+    return -2/*default*/;
+}
+bool cmp(char a,char b){
+    return ope(a)&gt;=ope(b);
+}
+struct Node{
+    bool is_num;  //是否为运算符 
+    int nm;       //数字 
+    char op;      //运算符 
+    Node(bool is_num=false,int nm=0,char op='\0'):is_num(is_num),nm(nm),op(op){}
+}ret[105];        //后缀表达式 
+stack&lt;char&gt; pri;
+int N;            //后缀表达式长度 
+char A[105];
+void print(){
+    for(int i=0;i&lt;N;i++){
+        if(ret[i].is_num)	printf(&quot;%d &quot;,ret[i].nm);
+        else	printf(&quot;%c &quot;,ret[i].op);
+    }
+    printf(&quot;\n&quot;);
+}
+void solve(){
+    for(int i=0;A[i];i++){
+        if(A[i]&gt;='0' &amp;&amp; A[i]&lt;='9')	ret[N++]=Node(true,A[i]-'0','\0');
+        else if(A[i]=='(')	pri.push(A[i]);
+        else if(A[i]==')'){
+            while(pri.top()!='('){
+                //如果保证表达式没有毛病，那么一个)一定对应一个( ，此时不用加!pri.empty() 
+                ret[N++]=Node(false,0,pri.top());
+                pri.pop();
+            }
+            pri.pop();
+        }
+        else{
+            while(!pri.empty() &amp;&amp; cmp(pri.top(),A[i])){
+                //这里要加!pri.empty()，因为有时候在疯狂弹出的时候到头了（栗子中的/和-） 
+                ret[N++]=Node(false,0,pri.top());
+                pri.pop();
+            }
+            pri.push(A[i]);
+        }
+    }
+    while(!pri.empty()){
+        ret[N++]=Node(false,0,pri.top());
+        pri.pop();
+    }
+    print();
+    while(N!=1){
+        //找到第一个计算符 
+        int l=0;
+        while(ret[l].is_num)	++l;
+        //暴力计算 
+        switch(ret[l].op){
+            case '+':
+                ret[l-2]=Node(true,ret[l-2].nm+ret[l-1].nm,'\0');
+                break;
+            case '-':
+                ret[l-2]=Node(true,ret[l-2].nm-ret[l-1].nm,'\0');
+                break;
+            case '*':
+                ret[l-2]=Node(true,ret[l-2].nm*ret[l-1].nm,'\0');
+                break;
+            case '/':
+                ret[l-2]=Node(true,ret[l-2].nm/ret[l-1].nm,'\0');
+                break;
+            case '^':
+                ret[l-2]=Node(true,pow(ret[l-2].nm,ret[l-1].nm),'\0');
+                break;
+            default:
+                break;
+        }
+        //往左挪两格 
+        for(int i=l-1;i&lt;N;i++)	ret[i]=ret[i+2];
+        print();
+        N-=2;
+    } 
+}
+int main(){
+    scanf(&quot;%s&quot;,A);
+    solve();
+}
+</code></pre>
+<p><a href="https://www.luogu.org/recordnew/show/18591666">提交记录</a></p>
+<h1 id="5in-the-end">5:In the end</h1>
+<p>表达式的求值在一些大模拟题目中很常见（比如说未来程序·改中的语句）。当然，在平常编写<a href="https://www.luogu.org/paste/tcp9ntag">科学计算器</a>的时候也是一个重要的知识点。</p>
+<p>所以，后缀表达式在表达式求值的题中节省了时间（<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>O</mi><mo>(</mo><msup><mi>n</mi><mn>2</mn></msup><mo>)</mo><mo>→</mo><mi>O</mi><mo>(</mo><mi>n</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">O(n^2) \rightarrow O(n)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.064108em;vertical-align:-0.25em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord"><span class="mord mathdefault">n</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">→</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord mathdefault">n</span><span class="mclose">)</span></span></span></span>）。</p>
+<h2 id="完结撒花-̄-̄">完结撒花！<code>*★,°*:.☆(￣▽￣)/$:*.°★* 。</code></h2>
+<p><s>放心吧，我不会推荐未来程序·改的</s></p>
+<p>最后，感谢@xhhkwy 给出单调栈的修改。</p>
+<p>P.S. : 本文旨在让大家更了解后缀表达式的运行方式和正确原因，而不是死记硬背的代码，所以那些觉得知识点简单的也不要狂喷。</p>
+]]></content>
+    </entry>
 </feed>

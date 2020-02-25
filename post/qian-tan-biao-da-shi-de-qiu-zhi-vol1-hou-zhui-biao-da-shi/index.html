@@ -1,0 +1,515 @@
+<html>
+<head>
+    <meta charset="utf-8"/>
+<meta name="description" content=""/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>浅谈表达式的求值（Vol.1 后缀表达式） | Tiger2005&#39;s Blog</title>
+<link rel="shortcut icon" href="https://tiger2005.github.io/favicon.ico?v=1582636438126">
+<link href="https://cdn.bootcss.com/font-awesome/5.11.2/css/all.css" rel="stylesheet">
+<link rel="stylesheet" href="https://tiger2005.github.io/styles/main.css">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+      integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/highlight.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dart.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/go.min.js"></script>
+<script src="https://cdn.bootcss.com/moment.js/2.23.0/moment.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+        integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+        integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+        crossorigin="anonymous"></script>
+
+<!-- DEMO JS -->
+<script src="media/scripts/index.js"></script>
+
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <nav class="navbar navbar-expand-lg">
+    <div class="navbar-brand">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            Tiger2005&#39;s Blog
+        </div>
+    </div>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+                <div class="nav-item">
+                    
+                        <a href="/" class="menu gt-a-link">
+                            首页
+                        </a>
+                    
+                </div>
+            
+                <div class="nav-item">
+                    
+                        <a href="/archives" class="menu gt-a-link">
+                            归档
+                        </a>
+                    
+                </div>
+            
+                <div class="nav-item">
+                    
+                        <a href="/tags" class="menu gt-a-link">
+                            标签
+                        </a>
+                    
+                </div>
+            
+                <div class="nav-item">
+                    
+                        <a href="/post/about" class="menu gt-a-link">
+                            关于
+                        </a>
+                    
+                </div>
+            
+        </div>
+    </div>
+</nav>
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    浅谈表达式的求值（Vol.1 后缀表达式）
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2020-02-25 ·
+                    </time>
+                    
+                        <a href="https://tiger2005.github.io/tag/YAQHDsqSV/" class="post-tags">
+                            # 表达式求值系列
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <h1 id="0序言">0:序言</h1>
+<blockquote>
+<p>我们在做一些题目的时候，需要求一些恶心的表达式的值。那么，我们需要用一些快一些的方法求值。</p>
+</blockquote>
+<p>我们能最先想到的就是暴力求值，也就是：</p>
+<p>一步步将可运算的地方运算好，最后剩下的就是表达式的值了。</p>
+<p>举个栗子：</p>
+<pre><code class="language-cpp"> (6+2*3)/4-5
+=(6+6)/4-5
+=(12)/4-5
+=3-5
+=-2
+</code></pre>
+<p>但是，这种方法很容易被卡掉。例如，<code>1+(2+(3+(4+(5+6))))</code>这个式子中，每一次可以执行的符号只有最里面括号的值（因为其他运算符都因为右边的运算没有结果而不能被运算）</p>
+<p>这个时候时间复杂度降到了<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>O</mi><mo>(</mo><msup><mi>n</mi><mn>2</mn></msup><mo>)</mo></mrow><annotation encoding="application/x-tex">O(n^2)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.064108em;vertical-align:-0.25em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord"><span class="mord mathdefault">n</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mclose">)</span></span></span></span>，非常慢。</p>
+<p>这个时候，我们就要想一些更快的方法。</p>
+<h1 id="1表达式的树">1:表达式的树</h1>
+<p>实际上，我们可以将整个表达式看成一个二叉树，每个非叶子节点上表示的是一个运算符，左右为这个运算符在原来的表达式中左右的值。叶子节点表示的是一个值。</p>
+<p>在计算时，我们可以用DFS的方法，在一个节点处先搜索左右儿子代表的值，之后计算。</p>
+<p>伪代码如下：</p>
+<pre><code>f() 参数：一个整数。返回值：一个整数。
+f(now) 
+    if(now是叶子节点)	return 这个叶子节点代表的值
+    return f(左儿子)[now所代表的运算符]f(右儿子)
+</code></pre>
+<p>我们还可以这么看：</p>
+<p>很多个数排在一起。每一次，两个相邻的数通过某种方式（就是根代表的运算符）合并成一个数，最后只剩下一个数，这就是表达式的值。</p>
+<p>举个例子：</p>
+<pre><code>(6+2*3)/4-5
+</code></pre>
+<figure data-type="image" tabindex="1"><img src="https://i.loli.net/2019/04/24/5cc03aaf8bcf5.png" alt="" loading="lazy"></figure>
+<p>合并过程长这样：</p>
+<pre><code>6 2 3 4 5
+6 6 4 5
+12 4 5
+3 5
+-2
+</code></pre>
+<p>过程如下：</p>
+<figure data-type="image" tabindex="2"><img src="https://i.loli.net/2019/04/24/5cc03aaf97d1a.png" alt="" loading="lazy"></figure>
+<figure data-type="image" tabindex="3"><img src="https://i.loli.net/2019/04/24/5cc03aed4b713.png" alt="" loading="lazy"></figure>
+<figure data-type="image" tabindex="4"><img src="https://i.loli.net/2019/04/24/5cc03b3118208.png" alt="" loading="lazy"></figure>
+<figure data-type="image" tabindex="5"><img src="https://i.loli.net/2019/04/24/5cc03b49e03f8.png" alt="" loading="lazy"></figure>
+<p>我们通过以下方式处理字符串（又是伪代码）：</p>
+<pre><code>tr() 参数：字符串S 返回：一棵树
+tr(S)
+    if(S只包含一个数字)
+    	return 以这个数字为根的树（只有一个节点）
+    找到最后运行的运算符X
+    将X设为这个树的根
+    将左儿子设为tr(S以X为分界线分开的左边部分)
+    右儿子设为tr(S以X为分界线分开的右边部分)
+    return 这个树
+</code></pre>
+<p>最后运行的运算符很好找，只要找这个表达式最外层的运算符中优先级最小的就好（不会优先级的出门左转）</p>
+<p>有多个只用取其中一个，这只会影响计算的先后，不影响结果。</p>
+<p>很棒。所以我们找到了另一个求表达式值的方法——</p>
+<p>转换为树的时候，通过回溯计算值。</p>
+<p>但是，很可惜。这个方法中，我们每一次构造的时候，要扫一次字符串并取出一个计算符。还是能用<code>1+(2+(3+(4+(5+6))))</code>这个例子卡成<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>O</mi><mo>(</mo><msup><mi>n</mi><mn>2</mn></msup><mo>)</mo></mrow><annotation encoding="application/x-tex">O(n^2)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.064108em;vertical-align:-0.25em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord"><span class="mord mathdefault">n</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mclose">)</span></span></span></span>。</p>
+<p>那怎么办？</p>
+<h1 id="2表达式的变形">2:表达式的变形</h1>
+<p>我们想到，一个树有它的三种遍历方式：<code>[前|中|后]序遍历</code></p>
+<p>我们把刚才这个树遍历：</p>
+<pre><code>前：- / + 6 * 2 3 4 5
+中：6 + 2 * 3 / 4 - 5
+后：6 2 3 * + 4 / 5 -
+</code></pre>
+<p>中序遍历就是原式， <strong>但是</strong> 我们通过运算优先级建树，这时候受到括号的影响，计算的优先级会改变（括号里面的优先）。</p>
+<p>判断的方式很简单。</p>
+<p>就比如除号，它在树中左边是加号，运算符优先级比它小，但是竟然先被计算，所以，加号所在子树左右应该加上括号。</p>
+<p>我们盯着<code>[前|后]序遍历</code>看。</p>
+<p>前序的时候，假设有一个排列如下：</p>
+<pre><code>计算符 数字1 数字2
+</code></pre>
+<p>那么这三个数可以被<code>数字1[计算符]数字2</code>代替（就是一次计算）</p>
+<p>后序的时候，假设有一个排列如下：</p>
+<pre><code>数字1 数字2 计算符
+</code></pre>
+<p>那么这三个数可以被<code>数字1[计算符]数字2</code>代替（就是一次计算）</p>
+<p>这个性质由前后序遍历中根不在左右子树中间而来。</p>
+<p>由于后序遍历的结果可以用<code>for</code>或<code>in range</code>计算（利用栈即可），我们用后序遍历的结果计算。</p>
+<blockquote>
+<p><code>P.S. :表达式的[前|中|后]序遍历有对应的名字：前缀表达式（波兰表达式），中缀表达式，后缀表达式（逆波兰表达式）</code></p>
+</blockquote>
+<h1 id="3求后缀表达式的简便方法">3:求后缀表达式的简便方法</h1>
+<p>我们旨在用<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>O</mi><mo>(</mo><mi>n</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">O(n)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord mathdefault">n</span><span class="mclose">)</span></span></span></span>的时间求出表达式的值，所以我们只能遍历表达式常数次。</p>
+<p>我们先抓住<code>1*2+3</code>这个栗子看，后缀表达式为<code>1 2 * 3 +</code></p>
+<p>我们再抓住<code>1+2*3</code>这个栗子看，后缀表达式为<code>1 2 3 * +</code></p>
+<p>我们从左往右遍历这个式子，我们发现，这两个式子中，</p>
+<p>在遍历到第二个运算符的时候，两者的操作不一样——一个将<code>*</code>加入后缀表达式，一个不是。</p>
+<p>这仅仅是<code>*</code>和<code>+</code>的优先级有差异。</p>
+<p>所以，我们实际上就是要维护一个运算优先级非降的运算符序列，在添加运算符的时候，我们仅仅需要在这个序列中去掉后面的元素，让这个序列添加这个运算符的时候依然有序。</p>
+<p>当你维护一个单调的序列的时候，你能想到什么？</p>
+<h3 id="单调栈">单调栈！</h3>
+<p>我们可以想到，当扫到一个数字的时候，直接加到后缀表达式里面，扫到一个运算符的时候，就把它丢到一个单调栈里面，并且这个单调栈维护的是运算优先级非降的一个字符列表。</p>
+<p>也就是说：</p>
+<pre><code>* s[N],ret[N];
+stack&lt;char&gt; pri;
+for i from 1 to N
+    if(s[i]是一个数)	直接加到ret中
+    else
+        while(pri顶部字符的优先级大于s[i]的优先级)
+            把pri顶端的字符加到ret里面，之后从pri里面弹出
+        把s[i]加到pri里面
+while(pri里面还有字符)
+	把pri顶端的字符加到ret里面，之后从pri里面弹出
+ret -&gt; 后缀表达式
+</code></pre>
+<p>好了，我们已经处理完了不含括号的时候后缀表达式的计算。</p>
+<p>那么，当表达式有了括号的时候，怎么办呢？</p>
+<p>我们想到，括号里面的计算符的计算优先级比外面的高，所以我们可以这样处理：</p>
+<pre><code>碰到(时，直接加入到栈（不进行任何弹出操作），并设置(的优先级为负无穷（这样能保证(不被弹出）
+碰到)时，从pri疯狂弹出字符，直到碰到(，把(弹出
+</code></pre>
+<p>为什么要疯狂弹出呢？</p>
+<p>很简单，我们要计算完括号里面的计算才能往下走，所以我们需要把括号里面的计算符先弹出，在后缀表达式的计算中相当于计算完括号里面的值。</p>
+<p>所以，真正的后缀表达式的寻找方法应该是这样</p>
+<pre><code>* s[N],ret[N];
+stack&lt;char&gt; pri;
+for i from 1 to N
+    if(s[i]是一个数)	直接加到ret中
+    else if(s[i]是'(')	直接加到pri中
+    else if(s[i]是')')
+    	while(pri顶部字符不是'(')
+            把pri顶端的字符加到ret里面，之后从pri里面弹出
+        从pri里面弹出'('
+    else
+        while(pri顶部字符的优先级大于s[i]的优先级)
+            把pri顶端的字符加到ret里面，之后从pri里面弹出
+        把s[i]加到pri里面
+while(pri里面还有字符)
+	把pri顶端的字符加到ret里面，之后从pri里面弹出
+ret -&gt; 后缀表达式
+</code></pre>
+<p>模拟<code>(6+2*3)/4-5</code>的计算</p>
+<pre><code>扫到(：直接弹入pri。
+---
+ret : 
+pri : (
+---
+扫到6：直接加入ret。
+---
+ret : 6
+pri : (
+---
+扫到+：加入到pri，因为(的优先级更小，所以没有弹出。
+---
+ret : 6
+pri : ( +
+---
+扫到2：直接加入ret。
+---
+ret : 6 2
+pri : ( +
+---
+扫到*：加入到pri，因为+的优先级更小，所以没有弹出。
+---
+ret : 6 2
+pri : ( + *
+---
+扫到3：直接加入到ret。
+---
+ret : 6 2 3
+pri : ( + *
+---
+扫到)：将pri中的字符疯狂弹出，直到碰到(，将(弹出。
+---
+ret : 6 2 3 * +
+pri : 
+---
+扫到/：直接加入到pri（pri是空的）。
+---
+ret : 6 2 3 * +
+pri : /
+---
+扫到4：直接加到ret。
+---
+ret : 6 2 3 * + 4
+pri : /
+---
+扫到-：加入到pri，因为/的优先级更大，将/弹出并加入到ret。
+---
+ret : 6 2 3 * + 4 /
+pri : -
+---
+扫到5：直接加入到ret。
+---
+ret : 6 2 3 * + 4 / 5
+pri : -
+---
+清空pri
+ret : 6 2 3 * + 4 / 5 -
+</code></pre>
+<p>因为计算的过程比较简单，所以我相信模拟可以让你们明白。</p>
+<p>模拟计算过程：</p>
+<pre><code>扫到6，加入栈
++------------
+| 6|  |  |  |
++------------
+扫到2，加入栈
++------------
+| 6| 2|  |  |
++------------
+扫到3，加入栈
++------------
+| 6| 2| 3|  |
++------------
+扫到*，计算2*3，返回6，把6加入栈中
++------------
+| 6| 6|  |  |
++------------
+扫到+，计算6+6，返回12，把12加入栈中
++------------
+|12|  |  |  |
++------------
+扫到4，加入栈
++------------
+|12| 4|  |  |
++------------
+扫到/，计算12/4，返回3，把3加入栈中
++------------
+| 3|  |  |  |
++------------
+扫到5，加入栈
++------------
+| 3| 5|  |  |
++------------
+扫到-，计算3-5，返回-2，把-2加入栈中
++------------
+|-2|  |  |  |
++------------
+结束，返回-2
+</code></pre>
+<p>所以，表达式的计算成功降到了<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>O</mi><mo>(</mo><mi>n</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">O(n)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord mathdefault">n</span><span class="mclose">)</span></span></span></span></p>
+<h1 id="4例题">4:例题</h1>
+<p><a href="https://www.luogu.org/problemnew/show/P1175">P1175 表达式的转换</a></p>
+<p><strong>注意</strong> ： 这道题中，pri维护的是升序（不能等于），每次运算需要找到第一个字符并计算。</p>
+<pre><code class="language-cpp">#include&lt;cstdio&gt;
+#include&lt;cstring&gt;
+#include&lt;stack&gt;
+#include&lt;algorithm&gt;
+#include&lt;cmath&gt;
+using namespace std;
+//8 - 18行均为运算符的优先级比较 
+int ope(char q){
+    if(q=='(')  return -1;
+    if(q=='+')  return 0;
+    if(q=='-')  return 0;
+    if(q=='*')  return 1;
+    if(q=='/')  return 1;
+    if(q=='^')	return 2;
+    return -2/*default*/;
+}
+bool cmp(char a,char b){
+    return ope(a)&gt;=ope(b);
+}
+struct Node{
+    bool is_num;  //是否为运算符 
+    int nm;       //数字 
+    char op;      //运算符 
+    Node(bool is_num=false,int nm=0,char op='\0'):is_num(is_num),nm(nm),op(op){}
+}ret[105];        //后缀表达式 
+stack&lt;char&gt; pri;
+int N;            //后缀表达式长度 
+char A[105];
+void print(){
+    for(int i=0;i&lt;N;i++){
+        if(ret[i].is_num)	printf(&quot;%d &quot;,ret[i].nm);
+        else	printf(&quot;%c &quot;,ret[i].op);
+    }
+    printf(&quot;\n&quot;);
+}
+void solve(){
+    for(int i=0;A[i];i++){
+        if(A[i]&gt;='0' &amp;&amp; A[i]&lt;='9')	ret[N++]=Node(true,A[i]-'0','\0');
+        else if(A[i]=='(')	pri.push(A[i]);
+        else if(A[i]==')'){
+            while(pri.top()!='('){
+                //如果保证表达式没有毛病，那么一个)一定对应一个( ，此时不用加!pri.empty() 
+                ret[N++]=Node(false,0,pri.top());
+                pri.pop();
+            }
+            pri.pop();
+        }
+        else{
+            while(!pri.empty() &amp;&amp; cmp(pri.top(),A[i])){
+                //这里要加!pri.empty()，因为有时候在疯狂弹出的时候到头了（栗子中的/和-） 
+                ret[N++]=Node(false,0,pri.top());
+                pri.pop();
+            }
+            pri.push(A[i]);
+        }
+    }
+    while(!pri.empty()){
+        ret[N++]=Node(false,0,pri.top());
+        pri.pop();
+    }
+    print();
+    while(N!=1){
+        //找到第一个计算符 
+        int l=0;
+        while(ret[l].is_num)	++l;
+        //暴力计算 
+        switch(ret[l].op){
+            case '+':
+                ret[l-2]=Node(true,ret[l-2].nm+ret[l-1].nm,'\0');
+                break;
+            case '-':
+                ret[l-2]=Node(true,ret[l-2].nm-ret[l-1].nm,'\0');
+                break;
+            case '*':
+                ret[l-2]=Node(true,ret[l-2].nm*ret[l-1].nm,'\0');
+                break;
+            case '/':
+                ret[l-2]=Node(true,ret[l-2].nm/ret[l-1].nm,'\0');
+                break;
+            case '^':
+                ret[l-2]=Node(true,pow(ret[l-2].nm,ret[l-1].nm),'\0');
+                break;
+            default:
+                break;
+        }
+        //往左挪两格 
+        for(int i=l-1;i&lt;N;i++)	ret[i]=ret[i+2];
+        print();
+        N-=2;
+    } 
+}
+int main(){
+    scanf(&quot;%s&quot;,A);
+    solve();
+}
+</code></pre>
+<p><a href="https://www.luogu.org/recordnew/show/18591666">提交记录</a></p>
+<h1 id="5in-the-end">5:In the end</h1>
+<p>表达式的求值在一些大模拟题目中很常见（比如说未来程序·改中的语句）。当然，在平常编写<a href="https://www.luogu.org/paste/tcp9ntag">科学计算器</a>的时候也是一个重要的知识点。</p>
+<p>所以，后缀表达式在表达式求值的题中节省了时间（<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>O</mi><mo>(</mo><msup><mi>n</mi><mn>2</mn></msup><mo>)</mo><mo>→</mo><mi>O</mi><mo>(</mo><mi>n</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">O(n^2) \rightarrow O(n)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.064108em;vertical-align:-0.25em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord"><span class="mord mathdefault">n</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">→</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord mathdefault">n</span><span class="mclose">)</span></span></span></span>）。</p>
+<h2 id="完结撒花-̄-̄">完结撒花！<code>*★,°*:.☆(￣▽￣)/$:*.°★* 。</code></h2>
+<p><s>放心吧，我不会推荐未来程序·改的</s></p>
+<p>最后，感谢@xhhkwy 给出单调栈的修改。</p>
+<p>P.S. : 本文旨在让大家更了解后缀表达式的运行方式和正确原因，而不是死记硬背的代码，所以那些觉得知识点简单的也不要狂喷。</p>
+
+                </div>
+            </article>
+        </div>
+
+        
+
+        
+            
+                <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+
+<div id="gitalk-container"></div>
+
+<script>
+
+  var gitalk = new Gitalk({
+    clientID: '2d2e95e6cb08b933f5c3',
+    clientSecret: '55aca31b204ae3ab6ae6d3a1b0740bf7e7dd69c3',
+    repo: 'tiger2005.github.io',
+    owner: 'tiger2005',
+    admin: ['tiger2005'],
+    id: location.pathname,      // Ensure uniqueness and length less than 50
+    distractionFreeMode: false  // Facebook-like distraction free mode
+  })
+
+  gitalk.render('gitalk-container')
+
+</script>
+
+            
+
+            
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">The author is too busy to write the description .</div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/tiger2005" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+            
+                <a href="https://www.zhihu.com/people/tiger2005" target="_blank">
+                    <i class="fab fa-zhihu gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+    </div>
+    Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a> | <a href="https://tiger2005.github.io/atom.xml" target="_blank">RSS</a>
+</div>
+
+<script>
+    hljs.initHighlightingOnLoad()
+</script>
+
+
+    </div>
+</div>
+</body>
+</html>
