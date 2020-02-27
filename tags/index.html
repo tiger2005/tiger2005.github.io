@@ -4,7 +4,7 @@
 <meta name="description" content=""/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Tiger2005&#39;s Blog</title>
-<link rel="shortcut icon" href="https://tiger2005.github.io/favicon.ico?v=1582679352850">
+<link rel="shortcut icon" href="https://tiger2005.github.io/favicon.ico?v=1582788318091">
 <link href="https://cdn.bootcss.com/font-awesome/5.11.2/css/all.css" rel="stylesheet">
 <link rel="stylesheet" href="https://tiger2005.github.io/styles/main.css">
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
@@ -116,7 +116,28 @@
             
         
     </div>
-    Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a> | <a href="https://tiger2005.github.io/atom.xml" target="_blank">RSS</a>
+    <script>
+	function suan(ng){
+		if(ng==0)	return "Sun";
+		if(ng==1)	return "Mon";
+		if(ng==2)	return "Tue";
+		if(ng==3)	return "Wed";
+		if(ng==4)	return "Thu";
+		if(ng==5)	return "Fri";
+		if(ng==6)	return "Sat";
+	}
+	var countdown = function(){
+		var now = new Date;
+		var dt = now.toLocaleString().split(/\s+/);
+		date.innerHTML = dt[0] + "   " + suan(now.getDay())+"   ";
+		time.innerHTML = dt[1];
+		setTimeout(countdown, 1000);
+	}
+	onload = countdown;
+</script>
+<div id="date"></div>
+<div id="time"></div>
+Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a> | <a href="https://tiger2005.github.io/atom.xml" target="_blank">RSS</a>
 </div>
 
 <script>

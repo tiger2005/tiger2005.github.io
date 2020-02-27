@@ -1,0 +1,515 @@
+<html>
+<head>
+    <meta charset="utf-8"/>
+<meta name="description" content=""/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Brainfuck详解 | Tiger2005&#39;s Blog</title>
+<link rel="shortcut icon" href="https://tiger2005.github.io/favicon.ico?v=1582788318091">
+<link href="https://cdn.bootcss.com/font-awesome/5.11.2/css/all.css" rel="stylesheet">
+<link rel="stylesheet" href="https://tiger2005.github.io/styles/main.css">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+      integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/highlight.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dart.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/go.min.js"></script>
+<script src="https://cdn.bootcss.com/moment.js/2.23.0/moment.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+        integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+        integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+        crossorigin="anonymous"></script>
+
+<!-- DEMO JS -->
+<script src="media/scripts/index.js"></script>
+
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <nav class="navbar navbar-expand-lg">
+    <div class="navbar-brand">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            Tiger2005&#39;s Blog
+        </div>
+    </div>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+                <div class="nav-item">
+                    
+                        <a href="/" class="menu gt-a-link">
+                            首页
+                        </a>
+                    
+                </div>
+            
+                <div class="nav-item">
+                    
+                        <a href="/archives" class="menu gt-a-link">
+                            归档
+                        </a>
+                    
+                </div>
+            
+                <div class="nav-item">
+                    
+                        <a href="/tags" class="menu gt-a-link">
+                            标签
+                        </a>
+                    
+                </div>
+            
+                <div class="nav-item">
+                    
+                        <a href="/post/about" class="menu gt-a-link">
+                            关于
+                        </a>
+                    
+                </div>
+            
+        </div>
+    </div>
+</nav>
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    Brainfuck详解
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2020-02-27 ·
+                    </time>
+                    
+                </div>
+                <div class="post-content">
+                    <script>
+	var lo,now,aaa,re,xx,yy,txt,ii,oo,by,coun=0,qwq,sss;
+	function com(be,en){
+		if(be>en){
+			re=re+xx+'|'+yy+":Runtime Error: There's no anything in it\n";
+			aaa=false;
+		}
+		var nn=be;
+		while(nn<=en){
+			if(lo[nn]=='<'){
+				;
+			}
+			else if(lo[nn]=='>'){
+				;
+			}
+			else if(lo[nn]=='+'){
+				;
+			}
+			else if(lo[nn]=='-'){
+				;
+			}
+			else if(lo[nn]=='.'){
+				;
+			}
+			else if(lo[nn]==','){
+				;
+			}
+			else if(lo[nn]=='['){
+				var nnn=nn+1,no=1;
+				while(no!=0 && nnn<=en){
+					if(lo[nnn]=='[')    ++no;
+					if(lo[nnn]==']')    --no;
+					++nnn;
+				}
+				if(nnn!=en+1||no==0){
+					aaa=com(nn+1,nnn-2);
+				}
+				else{
+					re=re+xx+'|'+yy+":Compile Error: I can\'t find the last part there\n";
+					aaa=false;
+				}
+				nn=nnn-1;
+			}
+			else if(lo[nn]==' '){;}
+			else if(lo[nn]==']'){
+				re=re+xx+'|'+yy+":Comlple Error: I can\'t the first part there\n";
+				aaa=false;
+			}
+			else if(lo[nn]=='\n'){
+				++xx;yy=0;
+			}
+			++yy;
+			++nn;
+		}
+		return aaa;
+	}
+	function get(){
+		qwq=qwq+1;
+		if(ii[qwq]!=undefined){
+			return ii.charCodeAt(qwq);
+		}
+		else	return 0;
+	}
+	function run(be,en,output){
+		var nn=be;
+		while(nn<=en){
+			++sss;
+			if(lo[nn]=='<'){
+				--now;
+			}
+			else if(lo[nn]=='>'){
+				++now;
+			}
+			else if(lo[nn]=='+'){
+				++by[now];
+				while(by[now]<0)    by[now]+=256;
+				while(by[now]>255)  by[now]-=256;
+			}
+			else if(lo[nn]=='-'){
+				--by[now];
+				while(by[now]<0)    by[now]+=256;
+				while(by[now]>255)  by[now]-=256;
+			}
+			else if(lo[nn]=='.'){
+				document.getElementById(output).value += String.fromCharCode(by[now]);
+			}
+			else if(lo[nn]==','){
+				by[now]=get();
+			}
+			else if(lo[nn]=='['){
+				var nnn=nn+1,no=1;
+				while(no!=0){
+					if(lo[nnn]=='[')    ++no;
+					if(lo[nnn]==']')    --no;
+					++nnn;
+				}
+				while(by[now]!=0){
+					run(nn+1,nnn-2,output);
+				}
+				nn=nnn-1;
+			}
+			++nn;
+		}
+		return 0;
+	}
+	function aa(code,input,output,info){
+		lo = document.getElementById(code).value; 
+		now=1;
+		xx=1;
+		yy=1;
+		aaa=true;
+		re='';
+		if(com(0,lo.length-1)){
+			re=re+"Compile Succeed\n";
+			ii = document.getElementById(input).value;
+			qwq=-1;
+			now=5000000;
+			by=new Array(10000001);
+			var i=0;
+			while(i<10000001){
+				by[i]=0;
+				++i;
+			}
+			document.getElementById(output).value = '';
+			sss=0;
+			run(0,lo.length-1,output);
+			document.getElementById(info).value = re;
+			return;
+		}
+		else	re=re+"Compile failed\n";
+		document.getElementById(info).value = re;
+		return;
+	}
+</script>
+<p>你有没有玩过NazoGame呢？</p>
+<p>是不是觉得第19关很和谐？</p>
+<figure data-type="image" tabindex="1"><img src="https://cdn.luogu.com.cn/upload/pic/25012.png" alt="" loading="lazy"></figure>
+<p>看看地址，哎，怎么写着：</p>
+<p>** brainfuck? **</p>
+<hr>
+<p>这便是我们今天要讨论的东东。</p>
+<p>实际上，Brainfuck是一种极小化的计算机语言，它是由Urban Müller在1993年创建的。由于fuck在英语中是脏话，这种语言有时被称为brainf*ck或brainf**k，甚至被简称为BF。</p>
+<p>这就是一个语言，但它不像C++那么多元化，但难度也一定的增加，因为</p>
+<p><strong>它只有8种关键字！</strong></p>
+<p>虽然还有一些更特殊的语言，chicken只有一个关键字chicken。Whitespace由空格、Tab、回车组成，所以全是白的。</p>
+<p>但Brainfuck语言可以和<a href="https://baike.so.com/doc/5960496-6173444.html">图灵机</a>互相模拟。</p>
+<p><s>图灵机就是一个模拟数学计算机器人</s></p>
+<p>接下来，就看看这8个关键字有什么用。</p>
+<h2 id="基本操作">基本操作</h2>
+<p>我们可以假想：</p>
+<p>Brainfuck开了一个近乎无限长的数组，大小1byte，一个指针指向一个位置。</p>
+<h3 id="指针操作">指针操作</h3>
+<pre><code class="language-cpp">&gt;  指针右移一位指向下一个字节
+&lt;  指针左移一位指向上一个字节
+由于指针两边不会无限长，所以会出现溢出空间的情况，编译器会报错。
+</code></pre>
+<h3 id="字节操作">字节操作</h3>
+<pre><code class="language-cpp">+  当前指针指向的字节+1
+-  当前指针指向的字节-1
+</code></pre>
+<p>当然，一个byte只能存256个数，Brainfuck选择存储0-255，但Brainfuck有一种很玄学的东西  。</p>
+<pre><code>0-1=255  
+255+1=0  
+</code></pre>
+<p>也就是说它自动模256···</p>
+<h3 id="读写操作">读写操作</h3>
+<pre><code class="language-cpp">.  以char的形式输出当前指针指向的字节（48会输出'0'）
+,  以ASCII的形式读入到当前指针指向的字节（读入'0'会存储48）
+</code></pre>
+<p>getch的回车10会变为换行13，打编译器时要注意了。</p>
+<h3 id="循环操作">循环操作</h3>
+<pre><code class="language-cpp">[  当当前指针指向的字节不是零时，会进行循环
+]  当当前指针指向的字节非零时回到循环，否则退出
+</code></pre>
+<p>正确的代码中，所有的循环符号将会分组，两个循环只有分离和包含关系。上面所说的‘循环’就是分组后的循环。</p>
+<p>所以，8个字符可以与C++转化，这个可以自己研究。</p>
+<h2 id="实例">实例</h2>
+<p>符号介绍完了，来道小题试试</p>
+<p><textarea rows="1" cols="115" id="code1" readonly="readonly"
+		  style="font-family:Consolas ;
+				font-size:14px;
+				background:RGBA(100,181,135,0.14) !important; 
+				resize:none ; 
+				color:#839496 !important;">,----------[----------------------.,----------]</textarea><br>
+<textarea rows="2" cols="115" id="input1"
+	style="
+	font-family:Consolas;
+	font-size:14px;
+	background:RGBA(100,181,135,0.14) !important; 
+	resize:none ; 
+	color:#839496 !important;
+	">abcdefg<br>
+</textarea><br>
+<textarea readonly="readonly" rows="5" cols="115" 
+	id="info1"
+	style="
+	font-family:Consolas;
+	font-size:14px;
+	background:RGBA(100,181,135,0.14) !important; 
+	resize:none ; 
+	color:#839496 !important;
+	"></textarea><br>
+<textarea readonly="readonly" rows="5" cols="115" id="output1"
+	style="
+	font-family:Consolas;
+	font-size:14px;
+	background:RGBA(100,181,135,0.14) !important; 
+	resize:none ; 
+	color:#839496 !important;
+	"></textarea><br>
+<button type="button" onclick="aa('code1','input1','output1','info1')" style="font-family:Consolas;font-size:14px;background-color:#0f3;color:#000;">Compile and Run</button></p>
+<p>翻译一下？</p>
+<p>首先，读入一个字符并减去10<br>
+之后，当这个字节非0时循环<br>
+循环中将字节减去22输出后重新读入，之后减去10<br>
+当它还不是0时继续循环<br>
+当它是0时结束循环<br>
+什么意思呢<br>
+就是将小写字母转大写啦~<br>
+回车结束啦~</p>
+<h2 id="常用算法">常用算法</h2>
+<h3 id="加减算法">加减算法</h3>
+<p>如何将一个字节减48？</p>
+<p>最直接的就是48个 - 了</p>
+<p>但想一想啊</p>
+<p>48=6*8</p>
+<p>你可以将下一个字节加上6（保证它是0哦）之后打一个循环</p>
+<p>当它非0时往左移一位减去8后挪回来减1就行啦~</p>
+<p>代码如下</p>
+<pre><code class="language-cpp">&gt;++++++[&lt;--------&gt;-]&lt;
+</code></pre>
+<h3 id="复制算法">复制算法</h3>
+<p>想想怎么将一个字节上的数挪到下一个字节呢？</p>
+<pre><code class="language-cpp">[&gt;+&lt;-]
+</code></pre>
+<p>但你会发现原来那个数字没了！qДq</p>
+<p>怎么办呢？</p>
+<p>先将这个数复制到另一个地方再同时复制</p>
+<pre><code class="language-cpp">[&gt;&gt;+&lt;&lt;-]&gt;&gt;[&lt;+&lt;+&gt;&gt;-]&lt;&lt;
+</code></pre>
+<p>第一个循环将这个数复制到后两位</p>
+<p>第二个循环将后两位上的数同时复制到原先那一位和其后面的一位</p>
+<h3 id="清零算法">清零算法</h3>
+<p>清零？</p>
+<pre><code class="language-cpp">[-]
+</code></pre>
+<p>不用解释了吧~剩下的就自己去摸索和训练吧</p>
+<h2 id="bf-的特点">BF 的特点</h2>
+<p>当然 Brainfuck还是有一些好处和坏处的</p>
+<ul>
+<li>
+<p>读入：快速读入（普通读入int读不进,double超难写）</p>
+</li>
+<li>
+<p>输出：快速输出（输出全是字符）</p>
+</li>
+<li>
+<p>码长：1000 1000多行~有兴趣的可以去玩玩</p>
+</li>
+<li>
+<p>省略：省略所有除关键字外的字符，所以你可以把它藏在一篇文章中</p>
+</li>
+<li>
+<p>出题：给那些不懂的人玩玩</p>
+</li>
+<li>
+<p><s>装逼</s></p>
+</li>
+</ul>
+<h2 id="实际应用">实际应用</h2>
+<p>拿一道题做例子（下面有提交地址的哦）</p>
+<p>小鱼的游泳时间</p>
+<p>这道题的读入有两位数，这正好是一个byte能存下来的</p>
+<p>但需要输入处理</p>
+<p>先读入一个数，减去48</p>
+<p>判断下一个字符是否为空格</p>
+<p>若不是，赶紧将前一位乘10啊啊啊</p>
+<p>之后就是相加啦~</p>
+<pre><code class="language-cpp">,&gt;++++++[&lt;++++++++&gt;-],--------------------------------[----------------&lt;[&gt;++++++++++&lt;-]&gt;[&lt;+&gt;-]&lt;,[-]]
+</code></pre>
+<p>但！负数怎么处理呢</p>
+<p>首先我们知道，这个负数不会小于-60，所以可以将其加60后进行60整数除法。若结果为1就表明不用处理否则时数减1</p>
+<p>思路就是这样，除法代码暂不给出</p>
+<hr>
+<p>最后，在线编辑器一份，可能有点丑。</p>
+<p><textarea rows="10" cols="115" id="code1"
+		  style="font-family:Consolas ;
+				font-size:14px;
+				background:RGBA(100,181,135,0.14) !important; 
+				resize:none ; 
+				color:#839496 !important;"></textarea><br>
+<textarea rows="5" cols="115" id="input1"
+	style="
+	font-family:Consolas;
+	font-size:14px;
+	background:RGBA(100,181,135,0.14) !important; 
+	resize:none ; 
+	color:#839496 !important;
+	"></textarea><br>
+<textarea readonly="readonly" rows="5" cols="115" 
+	id="info1"
+	style="
+	font-family:Consolas;
+	font-size:14px;
+	background:RGBA(100,181,135,0.14) !important; 
+	resize:none ; 
+	color:#839496 !important;
+	"></textarea><br>
+<textarea readonly="readonly" rows="5" cols="115" id="output1"
+	style="
+	font-family:Consolas;
+	font-size:14px;
+	background:RGBA(100,181,135,0.14) !important; 
+	resize:none ; 
+	color:#839496 !important;
+	"></textarea><br>
+<button type="button" onclick="aa('code1','input1','output1','info1')" style="font-family:Consolas;font-size:14px;background-color:#0f3;color:#000;">Compile and Run</button></p>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://tiger2005.github.io/post/about/" class="post-title gt-a-link">
+                    关于
+                </a>
+            </div>
+        
+
+        
+            
+                <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+
+<div id="gitalk-container"></div>
+
+<script>
+
+  var gitalk = new Gitalk({
+    clientID: '2d2e95e6cb08b933f5c3',
+    clientSecret: '55aca31b204ae3ab6ae6d3a1b0740bf7e7dd69c3',
+    repo: 'BlogComments',
+    owner: 'tiger2005',
+    admin: ['tiger2005'],
+    id: location.pathname,      // Ensure uniqueness and length less than 50
+    distractionFreeMode: false  // Facebook-like distraction free mode
+  })
+
+  gitalk.render('gitalk-container')
+
+</script>
+
+            
+
+            
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">The author is too busy to write the description .</div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/tiger2005" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+            
+                <a href="https://www.zhihu.com/people/tiger2005" target="_blank">
+                    <i class="fab fa-zhihu gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+    </div>
+    <script>
+	function suan(ng){
+		if(ng==0)	return "Sun";
+		if(ng==1)	return "Mon";
+		if(ng==2)	return "Tue";
+		if(ng==3)	return "Wed";
+		if(ng==4)	return "Thu";
+		if(ng==5)	return "Fri";
+		if(ng==6)	return "Sat";
+	}
+	var countdown = function(){
+		var now = new Date;
+		var dt = now.toLocaleString().split(/\s+/);
+		date.innerHTML = dt[0] + "   " + suan(now.getDay())+"   ";
+		time.innerHTML = dt[1];
+		setTimeout(countdown, 1000);
+	}
+	onload = countdown;
+</script>
+<div id="date"></div>
+<div id="time"></div>
+Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a> | <a href="https://tiger2005.github.io/atom.xml" target="_blank">RSS</a>
+</div>
+
+<script>
+    hljs.initHighlightingOnLoad()
+</script>
+
+
+    </div>
+</div>
+</body>
+</html>
