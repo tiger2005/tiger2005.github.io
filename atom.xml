@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://tiger2005.github.io</id>
     <title>Tiger2005&apos;s Blog</title>
-    <updated>2020-02-27T07:25:19.886Z</updated>
+    <updated>2020-02-27T14:52:53.492Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://tiger2005.github.io"/>
     <link rel="self" href="https://tiger2005.github.io/atom.xml"/>
@@ -341,7 +341,18 @@
         <link href="https://tiger2005.github.io/post/about/">
         </link>
         <updated>2020-02-25T14:20:46.000Z</updated>
-        <content type="html"><![CDATA[<p>之后补上</p>
+        <content type="html"><![CDATA[<pre><code class="language-cpp">AuthorInfo curr=(*this);
+cout &lt;&lt; AuthorInfo . name &lt;&lt; endl ;
+tiger2005
+cout &lt;&lt; ZhihuAccount . findUserName(AuthorInfo . name)&lt;&lt;endl ;
+tiger2005
+cout &lt;&lt; GithubAccount . findUserName(AuthorInfo . name)&lt;&lt;endl ;
+tiger2005
+cout &lt;&lt; LuoguAccount . findUserName(AuthorInfo . name)&lt;&lt;endl ;
+tiger2005
+cout &lt;&lt; AuthorInfo.email &lt;&lt; endl ;
+3478556308@qq.com
+</code></pre>
 ]]></content>
     </entry>
     <entry>
