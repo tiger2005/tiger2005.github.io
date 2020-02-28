@@ -4,7 +4,7 @@
 <meta name="description" content=""/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>浅谈表达式的求值（Vol.2 进阶） | Tiger2005&#39;s Blog</title>
-<link rel="shortcut icon" href="https://tiger2005.github.io/favicon.ico?v=1582874000824">
+<link rel="shortcut icon" href="https://tiger2005.github.io/favicon.ico?v=1582894611366">
 <link href="https://cdn.bootcss.com/font-awesome/5.11.2/css/all.css" rel="stylesheet">
 <link rel="stylesheet" href="https://tiger2005.github.io/styles/main.css">
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
@@ -309,8 +309,8 @@ Stack &gt; ((((6+(2*3))/4)-5)
 <p>实际上，除了前传开头提到的中缀表达式计算方法，中缀表达式是存在<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>O</mi><mo>(</mo><mi>n</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">O(n)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord mathdefault">n</span><span class="mclose">)</span></span></span></span>的计算方法的，在这里简单一提。</p>
 <p>在这里，我们可以预先求出括号的匹配关系，之后，在一串表达式中，我们可以使用跳跃括号的方式找到本表达式中最后计算的那些符号(注意，这几个符号的运算优先级应当一样)，将表达式劈成几部分后分别计算这几个表达式，就这样递归下去。由于每一次我们都跳过了括号，所以运算复杂度是<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>O</mi><mo>(</mo><mi>n</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">O(n)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord mathdefault">n</span><span class="mclose">)</span></span></span></span>的，但是常数随优先级个数而变化(想一想，为什么)。</p>
 <p>当然，构造巴科斯范式并使用递归下降法可以让速度达到一个新的高度，这些将会在之后讲到。</p>
-<h2 id="text5-总结">$ \text{5 总结} $</h2>
-<p>在消化了这篇文章以及它的<a href="https://www.luogu.org/blog/tiger2005/qian-tan-biao-da-shi-di-qiu-zhi-hou-zhui-biao-da-shi-post">前传</a>后，实际上简单的表达式的求值和转换都不是问题了。同时，你也可以将其使用在自创高级语言编译器的解析过程当中，大大加快处理的速度。</p>
+<h2 id="text5-总结"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mtext>5 总结</mtext></mrow><annotation encoding="application/x-tex">\text{5 总结}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord text"><span class="mord">5 </span><span class="mord cjk_fallback">总结</span></span></span></span></span></h2>
+<p>在消化了这篇文章以及它的<a href="https://tiger2005.github.io/post/qian-tan-biao-da-shi-de-qiu-zhi-vol1-hou-zhui-biao-da-shi/">前传</a>后，实际上简单的表达式的求值和转换都不是问题了。同时，你也可以将其使用在自创高级语言编译器的解析过程当中，大大加快处理的速度。</p>
 <p>最后，完结撒花!!!<code>*★,°*:.☆(￣▽￣)/$:*.°★* 。</code></p>
 
                 </div>
