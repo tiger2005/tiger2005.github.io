@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://tiger2005.github.io</id>
     <title>Tiger2005&apos;s Blog</title>
-    <updated>2020-02-27T14:54:58.914Z</updated>
+    <updated>2020-02-28T00:37:08.613Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://tiger2005.github.io"/>
     <link rel="self" href="https://tiger2005.github.io/atom.xml"/>
@@ -333,26 +333,6 @@
 	color:#839496 !important;
 	"></textarea><br>
 <button type="button" onclick="aa('code1','input1','output1','info1')" style="font-family:Consolas;font-size:14px;background-color:#0f3;color:#000;">Compile and Run</button></p>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[关于]]></title>
-        <id>https://tiger2005.github.io/post/about/</id>
-        <link href="https://tiger2005.github.io/post/about/">
-        </link>
-        <updated>2020-02-25T14:20:46.000Z</updated>
-        <content type="html"><![CDATA[<pre><code class="language-cpp">AuthorInfo = ( * this ) ;
-cout &lt;&lt; AuthorInfo . name &lt;&lt; endl ;
-tiger2005
-cout &lt;&lt; ZhihuAccount . findUserName(AuthorInfo . name)&lt;&lt;endl ;
-tiger2005
-cout &lt;&lt; GithubAccount . findUserName(AuthorInfo . name)&lt;&lt;endl ;
-tiger2005
-cout &lt;&lt; LuoguAccount . findUserName(AuthorInfo . name)&lt;&lt;endl ;
-tiger2005
-cout &lt;&lt; AuthorInfo.email &lt;&lt; endl ;
-3478556308@qq.com
-</code></pre>
 ]]></content>
     </entry>
     <entry>
