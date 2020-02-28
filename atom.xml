@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://tiger2005.github.io</id>
     <title>Tiger2005&apos;s Blog</title>
-    <updated>2020-02-28T02:12:11.821Z</updated>
+    <updated>2020-02-28T04:50:00.230Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://tiger2005.github.io"/>
     <link rel="self" href="https://tiger2005.github.io/atom.xml"/>
@@ -153,8 +153,8 @@
 <p>你有没有玩过NazoGame呢？</p>
 <p>是不是觉得第19关很和谐？</p>
 <figure data-type="image" tabindex="1"><img src="https://cdn.luogu.com.cn/upload/pic/25012.png" alt="" loading="lazy"></figure>
-<p>看看地址，哎，怎么写着：</p>
-<p>** brainfuck? **</p>
+<p>看看地址，哎，怎么写着</p>
+<p><strong>brainfuck?</strong></p>
 <hr>
 <p>这便是我们今天要讨论的东东。</p>
 <p>实际上，Brainfuck是一种极小化的计算机语言，它是由Urban Müller在1993年创建的。由于fuck在英语中是脏话，这种语言有时被称为brainf*ck或brainf**k，甚至被简称为BF。</p>
@@ -333,131 +333,6 @@
 	color:#839496 !important;
 	"></textarea><br>
 <button type="button" onclick="aa('code1','input1','output1','info1')" style="font-family:Consolas;font-size:14px;background-color:#0f3;color:#000;">Compile and Run</button></p>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[UOJ98 上下文无关文法]]></title>
-        <id>https://tiger2005.github.io/post/uoj98-shang-xia-wen-wu-guan-wen-fa/</id>
-        <link href="https://tiger2005.github.io/post/uoj98-shang-xia-wen-wu-guan-wen-fa/">
-        </link>
-        <updated>2020-02-25T13:31:19.000Z</updated>
-        <content type="html"><![CDATA[<pre><code class="language-cpp">PROGRAM ::= # include &lt; iostream &gt; # include &lt; cstdio &gt; using namespace std ; FUNC_AND_VAR
-
-FUNC_AND_VAR ::=
-| ε
-| int NAME ( OPTPARAMS ) { STATEMENTS } FUNC_AND_VAR
-| int DEFINEVAR DEFINEVARS ; FUNC_AND_VAR
-
-OPTPARAMS ::=
-| ε
-| int NAME PARAMS
-
-PARAMS ::=
-| ε
-| , int NAME PARAMS
-
-STATEMENTS ::=
-| ε
-| STATEMENT STATEMENTS
-
-STATEMENT ::=
-| EXPRESSION ;
-| { STATEMENTS }
-| int DEFINEVAR DEFINEVARS ;
-| if ( EXPRESSION ) STATEMENT
-| if ( EXPRESSION ) STATEMENT else STATEMENT
-| for ( STATEMENT_IN_FOR ; OPTEXPRESSION ; STATEMENT_IN_FOR ) STATEMENT
-| while ( EXPRESSION ) STATEMENT
-| return EXPRESSION ;
-
-STATEMENT_IN_FOR ::=
-| OPTEXPRESSION
-| int DEFINEVAR DEFINEVARS
-
-OPTEXPRESSION ::=
-| ε
-| EXPRESSION
-
-EXPRESSION ::=
-| UNIT9
-| EXPRESSION &lt;&lt; UNIT9
-| EXPRESSION &gt;&gt; UNIT9
-
-UNIT0 ::=
-| INT_CONSTANT
-| UNIT0 [ EXPRESSION ]
-| ( EXPRESSION )
-| NAME ( OPTARGUS )    // 注：此处的 NAME 是一个函数名
-| NAME    // 注：此处的 NAME 是一个变量名
-| cin
-| cout
-| endl
-
-UNIT1 ::=
-| UNIT0
-| + UNIT1
-| - UNIT1
-| ! UNIT1
-
-UNIT2 ::=
-| UNIT1
-| UNIT2 * UNIT1
-| UNIT2 / UNIT1
-| UNIT2 % UNIT1
-
-UNIT3 ::=
-| UNIT2
-| UNIT3 + UNIT2
-| UNIT3 - UNIT2
-
-UNIT4 ::=
-| UNIT3
-| UNIT4 &lt; UNIT3
-| UNIT4 &lt;= UNIT3
-| UNIT4 &gt; UNIT3
-| UNIT4 &gt;= UNIT3
-
-UNIT5 ::=
-| UNIT4
-| UNIT5 == UNIT4
-| UNIT5 != UNIT4
-
-UNIT6 ::=
-| UNIT5
-| UNIT6 ^ UNIT5
-
-UNIT7 ::=
-| UNIT6
-| UNIT7 &amp;&amp; UNIT6
-
-UNIT8 ::=
-| UNIT7
-| UNIT8 || UNIT7
-
-UNIT9 ::=
-| UNIT8
-| UNIT8 = UNIT9
-
-OPTARGUS ::=
-| ε
-| EXPRESSION ARGUS
-
-ARGUS ::=
-| ε
-| , EXPRESSION ARGUS
-
-DEFINEVARS ::=
-| ε
-| , DEFINEVAR DEFINEVARS
-
-DEFINEVAR ::=
-| NAME
-| DEFINEVAR [ INT_CONSTANT ]
-
-NAME ::= 仅包含大小写字母、数字、下划线的非空字符串，且不以数字开头。
-
-INT_CONSTANT ::= 仅包含数字的非空字符串，且不以0开头，或这个字符串就是0。
-</code></pre>
 ]]></content>
     </entry>
     <entry>
