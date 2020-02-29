@@ -1,0 +1,414 @@
+<html>
+<head>
+    <meta charset="utf-8"/>
+<meta name="description" content=""/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>浅谈表达式的求值（Vol.2 进阶） | Tiger2005&#39;s Blog</title>
+<link rel="shortcut icon" href="https://tiger2005.github.io/favicon.ico?v=1582936063593">
+<link href="https://cdn.bootcss.com/font-awesome/5.11.2/css/all.css" rel="stylesheet">
+<link rel="stylesheet" href="https://tiger2005.github.io/styles/main.css">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+      integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/highlight.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dart.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/go.min.js"></script>
+<script src="https://cdn.bootcss.com/moment.js/2.23.0/moment.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+        integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+        integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+        crossorigin="anonymous"></script>
+
+<!-- DEMO JS -->
+<script src="media/scripts/index.js"></script>
+
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <nav class="navbar navbar-expand-lg">
+    <div class="navbar-brand">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            Tiger2005&#39;s Blog
+        </div>
+    </div>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+                <div class="nav-item">
+                    
+                        <a href="/" class="menu gt-a-link">
+                            首页
+                        </a>
+                    
+                </div>
+            
+                <div class="nav-item">
+                    
+                        <a href="/archives" class="menu gt-a-link">
+                            归档
+                        </a>
+                    
+                </div>
+            
+                <div class="nav-item">
+                    
+                        <a href="/tags" class="menu gt-a-link">
+                            标签
+                        </a>
+                    
+                </div>
+            
+                <div class="nav-item">
+                    
+                        <a href="/post/about" class="menu gt-a-link">
+                            关于
+                        </a>
+                    
+                </div>
+            
+        </div>
+    </div>
+</nav>
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    浅谈表达式的求值（Vol.2 进阶）
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2020-02-25 ·
+                    </time>
+                    
+                        <a href="https://tiger2005.github.io/tag/YAQHDsqSV/" class="post-tags">
+                            # 表达式求值系列
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <p><a href="https://tiger2005.github.io/post/qian-tan-biao-da-shi-de-qiu-zhi-vol1-hou-zhui-biao-da-shi/"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mstyle mathcolor="red"><mrow><mi>W</mi><mi>a</mi><mi>r</mi><mi>n</mi><mi>i</mi><mi>n</mi><mi>g</mi></mrow></mstyle></mrow><annotation encoding="application/x-tex">\color{red}{Warning}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8777699999999999em;vertical-align:-0.19444em;"></span><span class="mord" style="color:red;"><span class="mord mathdefault" style="margin-right:0.13889em;color:red;">W</span><span class="mord mathdefault" style="color:red;">a</span><span class="mord mathdefault" style="margin-right:0.02778em;color:red;">r</span><span class="mord mathdefault" style="color:red;">n</span><span class="mord mathdefault" style="color:red;">i</span><span class="mord mathdefault" style="color:red;">n</span><span class="mord mathdefault" style="margin-right:0.03588em;color:red;">g</span></span></span></span></span></a></p>
+<p>在观看本博客之前，请保证自己理解了表达式的三种表达方式。</p>
+<p>本文旨在让大家更深层次的了解表达式，基础的知识就是上方的链接中所写的。所以，在了解后缀表达式的运算原理之后，我将不会讲述类似的前缀表达式的运算原理。</p>
+<pre><code>Change Logs:
+2019-10-27 14:01 修改：加入中缀表达式更快算法的简析
+2019-10-27 13:44 修改：加入&quot;知二推一&quot;出现的意义(个人之前没有表述清楚)
+2019-10-19 23:08 初稿
+</code></pre>
+<h2 id="text0-目录">$ \text{0 目录} $</h2>
+<p><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mtext>¶ 0 目录</mtext></mrow><annotation encoding="application/x-tex">\text{¶ 0 目录}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord text"><span class="mord">¶ 0 </span><span class="mord cjk_fallback">目录</span></span></span></span></span></p>
+<p><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mtext>¶ 1 浅谈后缀表达式的还原</mtext></mrow><annotation encoding="application/x-tex">\text{¶ 1 浅谈后缀表达式的还原}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord text"><span class="mord">¶ 1 </span><span class="mord cjk_fallback">浅谈后缀表达式的还原</span></span></span></span></span></p>
+<p><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mtext>¶ 2 前缀表达式介绍</mtext></mrow><annotation encoding="application/x-tex">\text{¶ 2 前缀表达式介绍}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord text"><span class="mord">¶ 2 </span><span class="mord cjk_fallback">前缀表达式介绍</span></span></span></span></span></p>
+<p><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mtext>                ¶ I 简单介绍</mtext></mrow><annotation encoding="application/x-tex">\text{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ¶ I 简单介绍}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord text"><span class="mord">                ¶ I </span><span class="mord cjk_fallback">简单介绍</span></span></span></span></span></p>
+<p><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mtext>                ¶ II 构造方法和还原方法</mtext></mrow><annotation encoding="application/x-tex">\text{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ¶ II 构造方法和还原方法}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord text"><span class="mord">                ¶ II </span><span class="mord cjk_fallback">构造方法和还原方法</span></span></span></span></span></p>
+<p><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mtext>                ¶ III 好玩的特性</mtext></mrow><annotation encoding="application/x-tex">\text{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ¶ III 好玩的特性}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord text"><span class="mord">                ¶ III </span><span class="mord cjk_fallback">好玩的特性</span></span></span></span></span></p>
+<p><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mtext>¶ 3 前中后缀表达式区别和联系</mtext></mrow><annotation encoding="application/x-tex">\text{¶ 3 前中后缀表达式区别和联系}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord text"><span class="mord">¶ 3 </span><span class="mord cjk_fallback">前中后缀表达式区别和联系</span></span></span></span></span></p>
+<p><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mtext>¶ 4 拓展</mtext></mrow><annotation encoding="application/x-tex">\text{¶ 4 拓展}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord text"><span class="mord">¶ 4 </span><span class="mord cjk_fallback">拓展</span></span></span></span></span></p>
+<p><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mtext>¶ 5 总结</mtext></mrow><annotation encoding="application/x-tex">\text{¶ 5 总结}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord text"><span class="mord">¶ 5 </span><span class="mord cjk_fallback">总结</span></span></span></span></span></p>
+<h2 id="text1-浅谈后缀表达式的还原">$ \text{1 浅谈后缀表达式的还原} $</h2>
+<p>我们可以使用后缀表达式来构造表达式树</p>
+<p>我们想一下后缀表达式的计算</p>
+<pre><code>后序的时候，假设有一个排列如下：
+数字1 数字2 计算符
+那么这三个数可以被数字1[计算符]数字2代替（就是一次计算）
+</code></pre>
+<p>我们再回头看一看表达式树的计算</p>
+<pre><code>f(左儿子)[now所代表的运算符]f(右儿子)
+</code></pre>
+<p>所以，我们可以想到一种非常像后缀表达式计算的方法：</p>
+<p>定义一种树，支持将几棵树用另一个顶点作为根合并起来，就像这样：</p>
+<pre><code>           *
+ +   -
+/ \ / \
+1 2 3 4
+
+-------------
+
+    *   
+   / \
+  +   -
+ / \ / \
+ 1 2 3 4
+</code></pre>
+<p>之后我们用一个栈S，利用以上性质计算：</p>
+<pre><code>inp -&gt; 后缀表达式
+struct Tree{...}
+stack&lt;Tree&gt; S
+for i from 1 to N
+    if(inp[i]是数字)	定义一个只有该数字的Tree，并加入到栈中
+    else	创建一个只有这个字符的Tree，之后将栈顶的两棵树以它为根合并
+</code></pre>
+<p>同时，我们也可以用字符串代替树，那么树的合并相当于字符串拼接，最后得到的是没有括号的中缀表达式。</p>
+<p>如果你想加括号的话，不妨利用以下文字，自己思考一下。</p>
+<pre><code>中序遍历就是原式，但是我们通过运算优先级建树，这时候受到括号的影响，计算的优先级会改变（括号里面的优先）。
+判断的方式很简单。
+就比如除号，它在树中左边是加号，运算符优先级比它小，但是竟然先被计算，所以，加号所在子树左右应该加上括号。
+</code></pre>
+<p>我们将模拟后缀表达式转中缀表达式帮助你了解，用表达式树的方法同理。</p>
+<pre><code>inp &gt; 6 2 3 * + 4 / 5 -
+扫到6
+Stack &gt; 6
+扫到2
+Stack &gt; 6 2
+扫到3
+Stack &gt; 6 2 3
+扫到*
+&quot;2&quot; + &quot;*&quot; + &quot;3&quot; = &quot;(2*3)&quot;
+Stack &gt; 6 (2*3)
+扫到+
+&quot;6&quot; + &quot;+&quot; + &quot;(2*3)&quot; = &quot;(6+(2*3))&quot;
+Stack &gt; (6+(2*3))
+扫到4
+Stack &gt; (6+(2*3)) 4
+扫到/
+&quot;(6+(2*3))&quot; + &quot;/&quot; + &quot;4&quot; = &quot;((6+(2*3))/4)&quot;
+Stack &gt; ((6+(2*3))/4)
+扫到5
+Stack &gt; ((6+(2*3))/4) 5
+扫到-
+((6+(2*3))/4)&quot; + &quot;-&quot; + &quot;5&quot; = &quot;((((6+(2*3))/4)-5)&quot;
+Stack &gt; ((((6+(2*3))/4)-5)
+</code></pre>
+<h2 id="text2-前缀表达式介绍"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mtext>2 前缀表达式介绍</mtext></mrow><annotation encoding="application/x-tex">\text{2 前缀表达式介绍}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord text"><span class="mord">2 </span><span class="mord cjk_fallback">前缀表达式介绍</span></span></span></span></span></h2>
+<p><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>→</mo><mtext>I 简单介绍</mtext></mrow><annotation encoding="application/x-tex">\rightarrow\text{I 简单介绍}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.36687em;vertical-align:0em;"></span><span class="mrel">→</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord text"><span class="mord">I </span><span class="mord cjk_fallback">简单介绍</span></span></span></span></span></p>
+<p>前缀表达式，类似于后缀表达式，是表达式的表达方式之一。</p>
+<p>和后缀表达式相近，前缀表达式&quot;将运算符写在前面&quot;，从而可以加快运行速度(和后缀表达式一样，在某种枚举顺序下，只使用出栈和入栈，加上基础计算，就可以在<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>O</mi><mo>(</mo><mi>n</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">O(n)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord mathdefault">n</span><span class="mclose">)</span></span></span></span>的复杂度下运行出结果)。</p>
+<p>打个比方，</p>
+<figure data-type="image" tabindex="1"><img src="https://i.loli.net/2019/04/24/5cc03aaf8bcf5.png" alt="" loading="lazy"></figure>
+<p>中，前缀表达式就是<code>- / + 6 * 2 3 4 5</code></p>
+<p><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>→</mo><mtext>II 构造方法和还原方法</mtext></mrow><annotation encoding="application/x-tex">\rightarrow\text{II 构造方法和还原方法}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.36687em;vertical-align:0em;"></span><span class="mrel">→</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord text"><span class="mord">II </span><span class="mord cjk_fallback">构造方法和还原方法</span></span></span></span></span></p>
+<p>刚才讲过，和后缀表达式一样，前缀表达式也支持<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>O</mi><mo>(</mo><mi>n</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">O(n)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord mathdefault">n</span><span class="mclose">)</span></span></span></span>的计算和还原。区别如下</p>
+<p><code>&gt;</code> 后缀表达式的枚举是从左到右，前缀表达式是从右到左</p>
+<p><code>&gt;</code> 后缀表达式的计算是[次顶元素][运算符][栈顶元素]，而前缀表达式的计算是[栈顶元素][运算符][次顶元素]</p>
+<p>其他的和后缀表达式没有区别。但是，由于从左到右判断代码明显更好些（举例：没有人会选择将已知字符串转为数字的时候倒着处理，这样还需要计算10的幂次），所以个人还是推荐使用后缀表达式处理方法。</p>
+<p>......算了，还是给一下运算举例吧。</p>
+<pre><code>- / + 6 * 2 3 4 5
+扫到5，加入栈
++------------
+| 5|  |  |  |
++------------
+扫到4，加入栈
++------------
+| 5| 4|  |  |
++------------
+扫到3，加入栈
++------------
+| 5| 4| 3|  |
++------------
+扫到2，加入栈
++------------
+| 5| 4| 3| 2|
++------------
+扫到*，计算2*3，返回6，把6加入栈中
++------------
+| 5| 4| 6|  |
++------------
+扫到6，加入栈
++------------
+| 5| 4| 6| 6|
++------------
+扫到+，计算6+6，返回12，把12加入栈中
++------------
+| 5| 4|12|  |
++------------
+扫到/，计算12/4，返回3，把3加入栈中
++------------
+| 5| 3|  |  |
++------------
+扫到-，计算3-5，返回-2，把-2加入栈中
++------------
+|-2|  |  |  |
++------------
+结束，返回-2
+</code></pre>
+<p><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>→</mo><mtext>III 好玩的特性</mtext></mrow><annotation encoding="application/x-tex">\rightarrow\text{III 好玩的特性}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.36687em;vertical-align:0em;"></span><span class="mrel">→</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord text"><span class="mord">III </span><span class="mord cjk_fallback">好玩的特性</span></span></span></span></span></p>
+<p>我们不妨将前缀表达式的括号显示，那么就会出现以下事情：</p>
+<pre><code>-(/(+(6,*(2,3))4),5)
+</code></pre>
+<p>这就像一个个函数一样了，也就是说，一个表达式</p>
+<pre><code>minus(divide(plus(6,multiply(2,3))4),5)
+</code></pre>
+<p>可以只通过去括号和逗号就可以转换为前缀表达式！</p>
+<p>所以，That's it ! 我们就可以将一个只由函数和数字组合的表达式只通过拆括号和去逗号的方式转为前缀表达式，在循环运算的时候甚至可以直接跳过这些省略的字符。</p>
+<p>因此，我们就找到了一种全新的表达式计算方法：</p>
+<p>对于每一个参数数量确定的函数，当参数为组合式的时候，递归处理前缀表达式；是数字的时候直接跳过。由此，我们就可以将一个表达式转换为前缀表达式，从而解决问题。</p>
+<p>为什么说数量确定？数量不确定的时候，函数的前缀表达式和其他的表达式一拼起来就会使得表达式出现歧义。</p>
+<p>这种方法正好适用于<a href="https://www.luogu.org/problem/UVA12666">这道题</a>，感兴趣的人可以去做一下。</p>
+<h2 id="text3-前中后缀表达式区别和联系"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mtext>3 前中后缀表达式区别和联系</mtext></mrow><annotation encoding="application/x-tex">\text{3 前中后缀表达式区别和联系}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord text"><span class="mord">3 </span><span class="mord cjk_fallback">前中后缀表达式区别和联系</span></span></span></span></span></h2>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">特性</th>
+<th style="text-align:center">中缀表达式</th>
+<th style="text-align:center">前缀表达式</th>
+<th style="text-align:center">后缀表达式</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">有无括号</td>
+<td style="text-align:center">有</td>
+<td style="text-align:center">无</td>
+<td style="text-align:center">无</td>
+</tr>
+<tr>
+<td style="text-align:center">运算方法</td>
+<td style="text-align:center">回溯</td>
+<td style="text-align:center">正向枚举</td>
+<td style="text-align:center">反向枚举</td>
+</tr>
+<tr>
+<td style="text-align:center">是否使用字符优先级</td>
+<td style="text-align:center">是</td>
+<td style="text-align:center">否</td>
+<td style="text-align:center">否</td>
+</tr>
+<tr>
+<td style="text-align:center">转换(还原)</td>
+<td style="text-align:center">单调栈</td>
+<td style="text-align:center">树型数据结构</td>
+<td style="text-align:center">树型数据结构</td>
+</tr>
+<tr>
+<td style="text-align:center">计算时间</td>
+<td style="text-align:center">一般<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>O</mi><mo>(</mo><msup><mi>n</mi><mn>2</mn></msup><mo>)</mo></mrow><annotation encoding="application/x-tex">O(n^2)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.064108em;vertical-align:-0.25em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord"><span class="mord mathdefault">n</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mclose">)</span></span></span></span></td>
+<td style="text-align:center"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>O</mi><mo>(</mo><mi>n</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">O(n)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord mathdefault">n</span><span class="mclose">)</span></span></span></span></td>
+<td style="text-align:center"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>O</mi><mo>(</mo><mi>n</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">O(n)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord mathdefault">n</span><span class="mclose">)</span></span></span></span></td>
+</tr>
+<tr>
+<td style="text-align:center">电脑解析难度</td>
+<td style="text-align:center">高</td>
+<td style="text-align:center">低</td>
+<td style="text-align:center">低</td>
+</tr>
+<tr>
+<td style="text-align:center">别名</td>
+<td style="text-align:center">中缀记法</td>
+<td style="text-align:center">波兰表达式</td>
+<td style="text-align:center">逆波兰表达式</td>
+</tr>
+</tbody>
+</table>
+<h2 id="text4-拓展"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mtext>4 拓展</mtext></mrow><annotation encoding="application/x-tex">\text{4 拓展}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord text"><span class="mord">4 </span><span class="mord cjk_fallback">拓展</span></span></span></span></span></h2>
+<p>由于之前BB了这么多关于表达式的转换，而且在中缀表达式去掉括号之后这三种表达式就是表达式树的三种基础遍历方式，所以这里利用三种表达式表示法的互相转换和还原解决知二推一的问题。由于死记硬背这些定理不好记住，所以建议和之前介绍的表达式求值和还原法理解。</p>
+<p>前中推后：顺序枚举前缀表达式，获取它在中缀表达式中的位置，从而将中缀表达式分成两半，在左右分别继续上面的操作，直到整棵表达式树的形态确定。后中推前同理，只需倒着枚举。</p>
+<p>前后推中：顺序枚举前缀表达式，获取它在后缀表达式中的位置，可以知道，后缀表达式中它的位置到它父亲的位置就是它父亲的右半子树的后缀表达式，以此类推。</p>
+<p>实际上，除了前传开头提到的中缀表达式计算方法，中缀表达式是存在<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>O</mi><mo>(</mo><mi>n</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">O(n)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord mathdefault">n</span><span class="mclose">)</span></span></span></span>的计算方法的，在这里简单一提。</p>
+<p>在这里，我们可以预先求出括号的匹配关系，之后，在一串表达式中，我们可以使用跳跃括号的方式找到本表达式中最后计算的那些符号(注意，这几个符号的运算优先级应当一样)，将表达式劈成几部分后分别计算这几个表达式，就这样递归下去。由于每一次我们都跳过了括号，所以运算复杂度是<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>O</mi><mo>(</mo><mi>n</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">O(n)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord mathdefault">n</span><span class="mclose">)</span></span></span></span>的，但是常数随优先级个数而变化(想一想，为什么)。</p>
+<p>当然，构造巴科斯范式并使用递归下降法可以让速度达到一个新的高度，这些将会在之后讲到。</p>
+<h2 id="text5-总结"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mtext>5 总结</mtext></mrow><annotation encoding="application/x-tex">\text{5 总结}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord text"><span class="mord">5 </span><span class="mord cjk_fallback">总结</span></span></span></span></span></h2>
+<p>在消化了这篇文章以及它的<a href="https://tiger2005.github.io/post/qian-tan-biao-da-shi-de-qiu-zhi-vol1-hou-zhui-biao-da-shi/">前传</a>后，实际上简单的表达式的求值和转换都不是问题了。同时，你也可以将其使用在自创高级语言编译器的解析过程当中，大大加快处理的速度。</p>
+<p>最后，完结撒花!!!<code>*★,°*:.☆(￣▽￣)/$:*.°★* 。</code></p>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://tiger2005.github.io/post/qian-tan-biao-da-shi-de-qiu-zhi-vol1/" class="post-title gt-a-link">
+                    浅谈表达式的求值（Vol.1 后缀表达式）
+                </a>
+            </div>
+        
+
+        
+            
+                <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+
+<div id="gitalk-container"></div>
+
+<script>
+
+  var gitalk = new Gitalk({
+    clientID: '2d2e95e6cb08b933f5c3',
+    clientSecret: '55aca31b204ae3ab6ae6d3a1b0740bf7e7dd69c3',
+    repo: 'BlogComments',
+    owner: 'tiger2005',
+    admin: ['tiger2005'],
+    id: location.pathname,      // Ensure uniqueness and length less than 50
+    distractionFreeMode: false  // Facebook-like distraction free mode
+  })
+
+  gitalk.render('gitalk-container')
+
+</script>
+
+            
+
+            
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">The author is too busy to write the description .</div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/tiger2005" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+            
+                <a href="https://www.zhihu.com/people/tiger2005" target="_blank">
+                    <i class="fab fa-zhihu gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+    </div>
+    <script>
+	function suan(ng){
+		if(ng==0)	return "Sun";
+		if(ng==1)	return "Mon";
+		if(ng==2)	return "Tue";
+		if(ng==3)	return "Wed";
+		if(ng==4)	return "Thu";
+		if(ng==5)	return "Fri";
+		if(ng==6)	return "Sat";
+	}
+	var countdown = function(){
+		var now = new Date;
+		var dt = now.toLocaleString().split(/\s+/);
+		date.innerHTML = dt[0] + "   " + suan(now.getDay())+"   ";
+		time.innerHTML = dt[1];
+		setTimeout(countdown, 1000);
+	}
+	onload = countdown;
+</script>
+<div id="date"></div>
+<div id="time"></div>
+Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a> | <a href="https://tiger2005.github.io/atom.xml" target="_blank">RSS</a>
+</div>
+
+<script>
+    hljs.initHighlightingOnLoad()
+</script>
+
+
+    </div>
+</div>
+</body>
+</html>

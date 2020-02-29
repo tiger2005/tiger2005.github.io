@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://tiger2005.github.io</id>
     <title>Tiger2005&apos;s Blog</title>
-    <updated>2020-02-28T15:24:28.141Z</updated>
+    <updated>2020-02-29T00:27:46.446Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://tiger2005.github.io"/>
     <link rel="self" href="https://tiger2005.github.io/atom.xml"/>
@@ -12,8 +12,8 @@
     <rights>All rights reserved 2020, Tiger2005&apos;s Blog</rights>
     <entry>
         <title type="html"><![CDATA[浅谈表达式的求值（Vol.4 BNF/REGEX/RFA/DFA）]]></title>
-        <id>https://tiger2005.github.io/post/qian-tan-biao-da-shi-de-qiu-zhi-vol4-bnfregexrfadfa/</id>
-        <link href="https://tiger2005.github.io/post/qian-tan-biao-da-shi-de-qiu-zhi-vol4-bnfregexrfadfa/">
+        <id>https://tiger2005.github.io/post/qian-tan-biao-da-shi-de-qiu-zhi-vol4/</id>
+        <link href="https://tiger2005.github.io/post/qian-tan-biao-da-shi-de-qiu-zhi-vol4/">
         </link>
         <updated>2020-02-28T12:58:14.000Z</updated>
         <content type="html"><![CDATA[<p>注：本文可能会有一点难，在学习 Trie 后将会有一个更好的观看体验。</p>
@@ -350,8 +350,8 @@
     </entry>
     <entry>
         <title type="html"><![CDATA[浅谈表达式的求值（Vol.3 使用AST进行代码解析和运行）]]></title>
-        <id>https://tiger2005.github.io/post/qian-tan-biao-da-shi-de-qiu-zhi-vol3-shi-yong-ast-jin-xing-dai-ma-jie-xi-he-yun-xing/</id>
-        <link href="https://tiger2005.github.io/post/qian-tan-biao-da-shi-de-qiu-zhi-vol3-shi-yong-ast-jin-xing-dai-ma-jie-xi-he-yun-xing/">
+        <id>https://tiger2005.github.io/post/qian-tan-biao-da-shi-de-qiu-zhi-vol3/</id>
+        <link href="https://tiger2005.github.io/post/qian-tan-biao-da-shi-de-qiu-zhi-vol3/">
         </link>
         <updated>2020-02-25T13:12:04.000Z</updated>
         <content type="html"><![CDATA[<blockquote>
@@ -565,8 +565,8 @@ define MemoryPool as map &lt; string , Var &gt;
     </entry>
     <entry>
         <title type="html"><![CDATA[浅谈表达式的求值（Vol.2 进阶）]]></title>
-        <id>https://tiger2005.github.io/post/qian-tan-biao-da-shi-de-qiu-zhi-vol2-jin-jie/</id>
-        <link href="https://tiger2005.github.io/post/qian-tan-biao-da-shi-de-qiu-zhi-vol2-jin-jie/">
+        <id>https://tiger2005.github.io/post/qian-tan-biao-da-shi-de-qiu-zhi-vol2/</id>
+        <link href="https://tiger2005.github.io/post/qian-tan-biao-da-shi-de-qiu-zhi-vol2/">
         </link>
         <updated>2020-02-25T13:11:02.000Z</updated>
         <content type="html"><![CDATA[<p><a href="https://tiger2005.github.io/post/qian-tan-biao-da-shi-de-qiu-zhi-vol1-hou-zhui-biao-da-shi/"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mstyle mathcolor="red"><mrow><mi>W</mi><mi>a</mi><mi>r</mi><mi>n</mi><mi>i</mi><mi>n</mi><mi>g</mi></mrow></mstyle></mrow><annotation encoding="application/x-tex">\color{red}{Warning}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8777699999999999em;vertical-align:-0.19444em;"></span><span class="mord" style="color:red;"><span class="mord mathdefault" style="margin-right:0.13889em;color:red;">W</span><span class="mord mathdefault" style="color:red;">a</span><span class="mord mathdefault" style="margin-right:0.02778em;color:red;">r</span><span class="mord mathdefault" style="color:red;">n</span><span class="mord mathdefault" style="color:red;">i</span><span class="mord mathdefault" style="color:red;">n</span><span class="mord mathdefault" style="margin-right:0.03588em;color:red;">g</span></span></span></span></span></a></p>
@@ -785,8 +785,8 @@ Stack &gt; ((((6+(2*3))/4)-5)
     </entry>
     <entry>
         <title type="html"><![CDATA[浅谈表达式的求值（Vol.1 后缀表达式）]]></title>
-        <id>https://tiger2005.github.io/post/qian-tan-biao-da-shi-de-qiu-zhi-vol1-hou-zhui-biao-da-shi/</id>
-        <link href="https://tiger2005.github.io/post/qian-tan-biao-da-shi-de-qiu-zhi-vol1-hou-zhui-biao-da-shi/">
+        <id>https://tiger2005.github.io/post/qian-tan-biao-da-shi-de-qiu-zhi-vol1/</id>
+        <link href="https://tiger2005.github.io/post/qian-tan-biao-da-shi-de-qiu-zhi-vol1/">
         </link>
         <updated>2020-02-25T13:09:53.000Z</updated>
         <content type="html"><![CDATA[<h1 id="0序言">0:序言</h1>
