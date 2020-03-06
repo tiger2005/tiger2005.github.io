@@ -3,7 +3,7 @@
     <meta charset="utf-8"/>
 <meta name="description" content=""/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>UOJ98 上下文无关文法 | Tiger2005&#39;s Blog</title>
+<title>LaTeX Runner ( Coding ... ) | Tiger2005&#39;s Blog</title>
 <link rel="shortcut icon" href="https://tiger2005.github.io/favicon.ico?v=1583506371234">
 <link href="https://cdn.bootcss.com/font-awesome/5.11.2/css/all.css" rel="stylesheet">
 <link rel="stylesheet" href="https://tiger2005.github.io/styles/main.css">
@@ -87,137 +87,67 @@
         <div class="post-detail gt-bg-theme-color-second">
             <article class="gt-post-content">
                 <h2 class="post-title">
-                    UOJ98 上下文无关文法
+                    LaTeX Runner ( Coding ... )
                 </h2>
                 <div class="post-info">
                     <time class="post-time gt-c-content-color-first">
-                        · 2020-02-25 ·
+                        · 2020-03-06 ·
                     </time>
                     
                 </div>
                 <div class="post-content">
-                    <pre><code class="language-cpp">PROGRAM ::= # include &lt; iostream &gt; # include &lt; cstdio &gt; using namespace std ; FUNC_AND_VAR
-
-FUNC_AND_VAR ::=
-| ε
-| int NAME ( OPTPARAMS ) { STATEMENTS } FUNC_AND_VAR
-| int DEFINEVAR DEFINEVARS ; FUNC_AND_VAR
-
-OPTPARAMS ::=
-| ε
-| int NAME PARAMS
-
-PARAMS ::=
-| ε
-| , int NAME PARAMS
-
-STATEMENTS ::=
-| ε
-| STATEMENT STATEMENTS
-
-STATEMENT ::=
-| EXPRESSION ;
-| { STATEMENTS }
-| int DEFINEVAR DEFINEVARS ;
-| if ( EXPRESSION ) STATEMENT
-| if ( EXPRESSION ) STATEMENT else STATEMENT
-| for ( STATEMENT_IN_FOR ; OPTEXPRESSION ; STATEMENT_IN_FOR ) STATEMENT
-| while ( EXPRESSION ) STATEMENT
-| return EXPRESSION ;
-
-STATEMENT_IN_FOR ::=
-| OPTEXPRESSION
-| int DEFINEVAR DEFINEVARS
-
-OPTEXPRESSION ::=
-| ε
-| EXPRESSION
-
-EXPRESSION ::=
-| UNIT9
-| EXPRESSION &lt;&lt; UNIT9
-| EXPRESSION &gt;&gt; UNIT9
-
-UNIT0 ::=
-| INT_CONSTANT
-| UNIT0 [ EXPRESSION ]
-| ( EXPRESSION )
-| NAME ( OPTARGUS )    // 注：此处的 NAME 是一个函数名
-| NAME    // 注：此处的 NAME 是一个变量名
-| cin
-| cout
-| endl
-
-UNIT1 ::=
-| UNIT0
-| + UNIT1
-| - UNIT1
-| ! UNIT1
-
-UNIT2 ::=
-| UNIT1
-| UNIT2 * UNIT1
-| UNIT2 / UNIT1
-| UNIT2 % UNIT1
-
-UNIT3 ::=
-| UNIT2
-| UNIT3 + UNIT2
-| UNIT3 - UNIT2
-
-UNIT4 ::=
-| UNIT3
-| UNIT4 &lt; UNIT3
-| UNIT4 &lt;= UNIT3
-| UNIT4 &gt; UNIT3
-| UNIT4 &gt;= UNIT3
-
-UNIT5 ::=
-| UNIT4
-| UNIT5 == UNIT4
-| UNIT5 != UNIT4
-
-UNIT6 ::=
-| UNIT5
-| UNIT6 ^ UNIT5
-
-UNIT7 ::=
-| UNIT6
-| UNIT7 &amp;&amp; UNIT6
-
-UNIT8 ::=
-| UNIT7
-| UNIT8 || UNIT7
-
-UNIT9 ::=
-| UNIT8
-| UNIT8 = UNIT9
-
-OPTARGUS ::=
-| ε
-| EXPRESSION ARGUS
-
-ARGUS ::=
-| ε
-| , EXPRESSION ARGUS
-
-DEFINEVARS ::=
-| ε
-| , DEFINEVAR DEFINEVARS
-
-DEFINEVAR ::=
-| NAME
-| DEFINEVAR [ INT_CONSTANT ]
-
-NAME ::= 仅包含大小写字母、数字、下划线的非空字符串，且不以数字开头。
-
-INT_CONSTANT ::= 仅包含数字的非空字符串，且不以0开头，或这个字符串就是0。
+                    <pre><code class="language-cpp">Current Status : Find a way to align subscripts.
+Changelogs:
+&gt; 2020/3/6 22:47
 </code></pre>
-
+<h1 id="welcome-all-the-htmljscss-coders-to-join">Welcome all the HTML/JS/CSS coders to join</h1>
+<p>, and you can give some advice on expression-calculating and string-manipulating.<br>
+Javascript code there : <a href="../../media/scripts/LatexRunner.js">Link</a><br>
+HTML code below :</p>
+<pre><code class="language-html">&lt;script&gt;
+@font-face {
+    font-family: 'Fira Code';
+    src: url(../../media/fonts/FiraCode-Regular.ttf)
+}
+&lt;/script&gt;
+&lt;html&gt;
+	&lt;head&gt;
+		&lt;script src=&quot;main.js&quot;&gt;&lt;/script&gt;
+	&lt;/head&gt;
+	&lt;body&gt;
+		&lt;textarea id=&quot;aaa&quot;&gt;1_2^{3^4}&lt;/textarea&gt;
+		&lt;div style=&quot;background:#ccc&quot; id=&quot;bbb&quot;&gt;&lt;/div&gt;
+		&lt;button type=&quot;button&quot; onclick=&quot;document.getElementById('bbb').innerHTML=GetLaTex(document.getElementById('aaa'))&quot;&gt;Click me to run LaTeX Code&lt;/button&gt;
+	&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+<script>
+@font-face {
+    font-family: 'Fira Code';
+    src: url(../../media/fonts/FiraCode-Regular.ttf)
+}
+</script>
+<html>
+	<head>
+		<script src="main.js"></script>
+	</head>
+	<body>
+		<textarea id="aaa">1_2^{3^4}</textarea>
+		<div style="background:#ccc" id="bbb"></div>
+		<button type="button" onclick="document.getElementById('bbb').innerHTML=GetLaTex(document.getElementById('aaa'))">Click me to run LaTeX Code</button>
+	</body>
+</html>
                 </div>
             </article>
         </div>
 
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://tiger2005.github.io/post/qian-tan-biao-da-shi-de-qiu-zhi-vol4/" class="post-title gt-a-link">
+                    浅谈表达式的求值（Vol.4 BNF/REGEX/RFA/DFA）
+                </a>
+            </div>
         
 
         
