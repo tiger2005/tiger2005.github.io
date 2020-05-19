@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://tiger2005.github.io</id>
     <title>Tiger2005&apos;s Blog</title>
-    <updated>2020-04-12T03:21:16.341Z</updated>
+    <updated>2020-05-19T11:15:21.128Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://tiger2005.github.io"/>
     <link rel="self" href="https://tiger2005.github.io/atom.xml"/>
@@ -355,7 +355,7 @@
         </link>
         <updated>2020-02-25T13:12:04.000Z</updated>
         <content type="html"><![CDATA[<blockquote>
-<p>哪个OIer不想做出模拟C++编辑器(<a href="http://uoj.ac/problem/98">UOJ 98</a>)呢？</p>
+<p>哪个OIer不想做出模拟C++解释器(<a href="http://uoj.ac/problem/98">UOJ 98</a>)呢？</p>
 </blockquote>
 <p>我也有过这个梦想。</p>
 <p>打开这道题的统计，稍稍扫过前10，虽然我们不能像第一一样使用很风骚的方式 AC 这一道题，但是我们可以利用表达式树解决（这个东西虽然慢，但是很鲁棒好想，对于没有接触过这种大模拟的人是不二之选）。</p>
