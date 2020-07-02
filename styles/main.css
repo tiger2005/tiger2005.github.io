@@ -573,11 +573,14 @@ ul li {
   margin-top: 20px;
 }
 .post-list-container .post-inner .post .post-left .post-info .post-time {
-  font-size: 12px;
+  font-size: 16px !important;
 }
 .post-list-container .post-inner .post .post-left .post-info .post-tag {
-  font-size: 12px;
+  font-size: 16px !important;
   margin-left: 10px;
+  background: #5baf7f !important;
+  color: #ffffff !important;
+  border: 5px;
 }
 .post-list-container .post-inner .post:hover {
   transform: scale(1.012);
@@ -664,11 +667,13 @@ ul li {
 }
 .post-container .post-detail .post-info {
   text-align: center;
-  font-size: 12px;
+  font-size: 16px !important;
   padding-bottom: 24px;
 }
 .post-container .post-detail .post-info .post-tag {
   padding: 8px 16px;
+  background: #5baf7f !important;
+  color: #ffffff !important;
 }
 .post-container .post-detail .post-content {
   margin-top: 30px;
