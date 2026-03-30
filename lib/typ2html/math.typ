@@ -19,6 +19,8 @@
 }
 
 #let auto-frame(content) = html-guard(
-  () => html.frame(content),
+  () => html.div(class: "auto-frame", {
+    html.frame(content)
+  }),
   fallback: () => content
 )

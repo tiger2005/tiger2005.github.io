@@ -23,6 +23,7 @@
     let footnotes = query(footnote)
     if footnotes.len() != 0 {
       html.elem("section", attrs: (role: "doc-endnotes"))[
+        #html.hr()
         #html.ol({
           for it in footnotes {
             let number = counter(footnote).display(it.numbering)
@@ -98,6 +99,7 @@
 ) = context {
   html-guard(() => {
     import "raw.typ": template-raw
+    import "grid.typ": template-grids
     import "math.typ": template-math
     import "refs.typ": template-refs
     import "notes.typ": template-notes
@@ -111,6 +113,7 @@
     show: template-notes
     show: template-figures
     show: template-links
+    show: template-grids
     show: template-table
 
     set text(lang: lang)

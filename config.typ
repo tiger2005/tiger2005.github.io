@@ -5,17 +5,14 @@
 ]
 
 #let tag-options = (
-  "博客搭建": (preset: "cyan", "icon": "/assets/icons/rocket.svg"),
-  "Typst": ("preset": "teal", "icon": "/assets/icons/pen.svg"),
-  "写作指南": ("preset": "blue", "icon": "/assets/icons/edit.svg"),
-  "配置指南": ("preset": "green", "icon": "/assets/icons/settings.svg"),
+  "矩阵链乘积问题": ("preset": "blue", "icon": "/assets/icons/data-bin.svg")
 )
 
 #let render-tag-link = render-tag-link.with(tag-options: tag-options)
 #let render-tag-card = render-tag-card.with(tag-options: tag-options)
 
 #let templates = make-templates(
-  site-title: "Carbon Typst Blog",
+  site-title: "tiger2005 的随笔",
   header-links: (
     "/": "首页",
     "/categories/": "分类",
@@ -35,5 +32,14 @@
   )
 )
 
-#let template-post = templates.post
 #let template-page = templates.page
+#let template-post(..args) = {
+  set page(height: auto, width: 30cm)
+  set text(16pt, font: ("IBM Plex Sans SC"), lang: "zh")
+  show raw: text.with(font: ("Zed Plex Mono", "IBM Plex Sans SC"))
+  show math.equation: set text(16pt)
+  set table(inset: 8pt)
+  set grid(inset: 8pt)
+
+  (templates.post)(..args)
+}

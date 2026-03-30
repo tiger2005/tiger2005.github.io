@@ -2,10 +2,13 @@
 
 #let template-figures(content) = {
   show figure: it => html-guard(() => {
-    html.figure({
-      it.body
-      it.caption
-    })
+    html.figure(
+      class: "html-auto-figure",
+      {
+        it.body
+        it.caption
+      }
+    )
   }, fallback: () => it)
 
   content
