@@ -6,7 +6,7 @@
   description: "本文主要讲解 Hu-Shing 算法的第二部分内容，包含单调基础多边形上的线性算法，以及推广得到的一般多边形算法。",
   tags: ("矩阵链乘积问题",),
   category: "Hu-Shing 算法合集",
-  date: datetime(year: 2026, month: 3, day: 30)
+  date: datetime(year: 2026, month: 3, day: 29)
 )
 
 = 引言

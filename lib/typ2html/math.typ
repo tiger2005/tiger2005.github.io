@@ -18,8 +18,8 @@
   content
 }
 
-#let auto-frame(content) = html-guard(
-  () => html.div(class: "auto-frame", {
+#let auto-frame(disable-filter: false, content) = html-guard(
+  () => html.div(class: "auto-frame " + if disable-filter { "disable-filter" } else { "" }, {
     html.frame(content)
   }),
   fallback: () => content
