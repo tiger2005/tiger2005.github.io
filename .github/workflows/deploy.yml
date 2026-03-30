@@ -27,7 +27,7 @@ jobs:
       - name: Setup Typst
         uses: typst-community/setup-typst@v4
         with:
-          version: '0.14.2'
+          typst-version: '0.14.2'
 
       - name: Install dependencies
         run: npm install
