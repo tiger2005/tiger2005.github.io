@@ -4,7 +4,7 @@
 #show: template-post.with(
   title: "第 39 次 CCF CSP 认证 T4 T5 题解",
   description: "本文包含第 39 次 CCF CSP 认证 T4 “造题计划（上）” 和 T5 “造题计划（下）” 的题解。",
-  tags: ("数论", "图论 ", "模拟费用流"),
+  tags: ("数论", "图论", "模拟费用流"),
   category: "CCF CSP 题解",
   date: datetime(year: 2026, month: 3, day: 30)
 )

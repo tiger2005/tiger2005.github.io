@@ -4,7 +4,7 @@
 #show: template-post.with(
   title: "第 40 次 CCF CSP 认证 T4 T5 题解",
   description: "本文包含第 40 次 CCF CSP 认证 T4 “C 形阵” 和 T5 “数据抢修” 的题解。",
-  tags: ("数论", "积性函数", "数据结构"),
+  tags: ("数论", "数据结构"),
   category: "CCF CSP 题解",
   date: datetime(year: 2026, month: 3, day: 30)
 )

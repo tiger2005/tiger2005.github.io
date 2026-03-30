@@ -4,7 +4,7 @@
 #show: template-post.with(
   title: "第 41 次 CCF CSP 认证 T4 T5 题解",
   description: "本文包含第 41 次 CCF CSP 认证 T4 “异或” 和 T5 “旅游计划” 的题解。",
-  tags: ("数据结构", "图论"),
+  tags: ("数论", "数据结构", "图论"),
   category: "CCF CSP 题解",
   date: datetime(year: 2026, month: 3, day: 30)
 )

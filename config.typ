@@ -5,7 +5,13 @@
 ]
 
 #let tag-options = (
-  "矩阵链乘积问题": ("preset": "blue", "icon": "/assets/icons/data-bin.svg")
+  "矩阵链乘积问题": ("preset": "blue", "icon": "/assets/icons/data-bin.svg"),
+  "图论": ("preset": "cyan", "icon": "/assets/icons/concept.svg"),
+  "数据结构": ("preset": "teal", "icon": "/assets/icons/parent-child.svg"),
+  "数论": ("preset": "purple", "icon": "/assets/icons/calculation.svg"),
+  "动态规划": ("preset": "magenta", "icon": "/assets/icons/app-connectivity.svg"),
+  "线性代数": ("preset": "red", "icon": "/assets/icons/matrix.svg"),
+  "模拟费用流": ("preset": "cyan", "icon": "/assets/icons/flow--modeler--reference.svg"),
 )
 
 #let render-tag-link = render-tag-link.with(tag-options: tag-options)
