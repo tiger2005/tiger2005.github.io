@@ -1,8 +1,61 @@
 #import "lib/typ2html/typ2html.typ" : *
+#import "lib/typ2html/sys-input.typ" : query-input
 
-#let footer-content = [
-  2026 \~ Present    Carbon Typst Blog
-]
+#let current-file-type = str(query-input("file-type", default: "pages"))
+#let current-page-path = str(query-input("page-path", default: "")).trim("/")
+#let current-source-prefix = if current-file-type == "posts" { "posts" } else { "pages" }
+#let current-source-path = if current-page-path == "" {
+  current-source-prefix
+} else {
+  current-source-prefix + "/" + current-page-path
+} + "/index.typ"
+
+#let footer-content = html.div(
+  class: "footer-content",
+  {
+    html.div(class: "footer-flex-outer", {
+      html.div(class: "footer-flex-block", {
+        html.div(
+          link("https://www.luogu.com.cn/user/60864")[洛谷]
+        )
+        html.div(
+          link("https://codeforces.com/profile/tiger2005")[Codeforces]
+        )
+        html.div(
+          link("https://atcoder.jp/users/tiger2005")[AtCoder]
+        )
+        html.div(
+          link("https://loj.ac/u/tiger2005")[LibreOJ]
+        )
+        html.div(
+          link("https://uoj.ac/user/profile/tiger2005")[UOJ]
+        )
+      })
+      html.div(class: "footer-flex-block", {
+        html.div(
+          link("https://github.com/tiger2005")[GitHub]
+        )
+        html.div(
+          link("https://www.zhihu.com/people/tiger2005")[知乎]
+        )
+        html.div(
+          link("https://space.bilibili.com/350620554")[B 站]
+        )
+      })
+    })
+    html.div(class: "footer-flex-block", {
+      html.div({
+        "本页面由 Typst 编译于 " + datetime.today().display("[year] 年 [month padding:none] 月 [day padding:none] 日")
+      })
+      html.div(
+        link("https://github.com/tiger2005/tiger2005.github.io/blob/master/" + current-source-path)[查看源代码]
+      )
+      html.div(
+        link("/rss.xml")[RSS 订阅]
+      )
+    })
+  }
+)
 
 #let tag-options = (
   "矩阵链乘积问题": ("preset": "blue", "icon": "/assets/icons/data-bin.svg"),

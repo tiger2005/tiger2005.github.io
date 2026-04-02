@@ -21,16 +21,7 @@
 
 #render-page-breadcrumb(items: (("/", "首页"),))
 
-= #{html.div(class: "title-with-icon", {
-  html.div(
-    class: "tag-title-icon",
-    style: "--tag-background:var(--tag-background-gray);--tag-color:var(--tag-color-gray);",
-    {
-      html.span(style: "mask-image:url(\"/assets/icons/box.svg\");")
-    },
-  )
-  html.div("文章归档")
-})}
+= 文章归档
 
 #if posts.len() == 0 {
   html.div(class: "error-block", {

@@ -90,11 +90,9 @@
     ]
 
     html.footer({
-      html.div(class: "post-footer", {
-        if footer-content != none {
-          footer-content
-        }
-      })
+      if footer-content != none {
+        footer-content
+      }
     })
   })
 }

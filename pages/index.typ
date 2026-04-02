@@ -16,10 +16,25 @@
 #if route-page != 1 [
   = 文章列表
 ] else {
-  html.div(class: "homepage-header", {
-    html.div(class: "homepage-header-carbon", "Carbon")
-    html.div(class: "homepage-header-typst", "Typst")
-    html.div(class: "homepage-header-blog", "Blog")
+  import "header.typ": gen-header-svg
+  html.div(class: "header-container", {
+    html.div(
+      class: "header-svg",
+      {
+        gen-header-svg()
+      }
+    )
+    html.div(
+      class: "header-content",
+      {
+        html.div(class: "site-title", {
+          "tiger2005 的随笔"
+        })
+        // html.p(class: "site-description", {
+        //   templates.site-description
+        // })
+      }
+    )
   })
 }
 

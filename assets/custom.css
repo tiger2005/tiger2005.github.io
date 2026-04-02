@@ -8,3 +8,148 @@
     custom-script: ("/assets/custom.js", )
   )
 */
+
+.header-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.header-content .site-title {
+  font-size: 1.75rem;
+  font-weight: 600;
+  margin: 0.5rem 0 2.5rem 0;
+}
+
+.header-container > .header-svg {
+  width: 200px;
+  height: 200px;
+}
+
+@media (min-width: 1584px) {
+  .header-container > .header-svg {
+    width: 220px;
+    height: 220px;
+  }
+}
+
+@media (max-width: 768px) {
+  .header-container > .header-svg {
+    width: 125px;
+    height: 125px;
+  }
+
+  .header-content .site-title {
+    font-size: 1.5rem;
+    margin: 0.5rem 0 1.5rem 0;
+  }
+}
+
+.hero-grid-svg .hero-grid-line {
+  stroke-dasharray: var(--line-len);
+  stroke-dashoffset: var(--line-len);
+  animation-name: hero-line-draw;
+  animation-duration: var(--line-draw, 0.3s);
+  animation-delay: calc(var(--line-delay, 0) * var(--line-step, 0.05s));
+  animation-timing-function: ease-out;
+  animation-fill-mode: forwards;
+  animation-iteration-count: 1;
+}
+
+.hero-grid-svg .line-layer {
+  opacity: 1;
+  animation: hero-layer-fade-out var(--phase-fade, 0.5s) ease var(--phase-final-start, 3s) forwards;
+}
+
+.hero-grid-svg .tri-preview-layer {
+  opacity: 0;
+  animation:
+    hero-layer-fade-in var(--phase-fade, 0.5s) ease var(--phase-tri-start, 2s) forwards,
+    hero-layer-fade-out var(--phase-fade, 0.5s) ease var(--phase-final-start, 3s) forwards;
+}
+
+.hero-grid-svg .final-layer {
+  opacity: 0;
+  animation: hero-layer-fade-in var(--phase-fade, 0.5s) ease var(--phase-final-start, 3s) forwards;
+}
+
+@keyframes hero-line-draw {
+  from {
+    stroke-dashoffset: var(--line-len);
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes hero-layer-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes hero-layer-fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.footer-content {
+  padding-bottom: 2rem;
+  width: 100%;
+  max-width: 60rem;
+  margin: 0 auto;
+  font-size: 0.875rem;
+  text-align: left;
+  display: flex;
+  flex-direction: row;
+  gap: 2rem;
+}
+
+.footer-flex-outer {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  gap: 2rem;
+}
+
+.footer-content .footer-flex-block {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.footer-flex-block a {
+  color: white !important;
+  text-decoration: none !important;
+}
+
+@media (min-width: 769px) {
+  .footer-content .footer-flex-block {
+    gap: 0;
+  }
+
+  .footer-flex-outer > .footer-flex-block {
+    flex: 0 0 8rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .footer-content, .footer-flex-outer {
+    flex-direction: column;
+  }
+
+  .footer-flex-outer > .footer-flex-block {
+    padding-bottom: 3rem;
+    border-bottom: 1px solid #393939;
+  }
+}
+
