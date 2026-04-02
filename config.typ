@@ -66,6 +66,7 @@
   "数论": ("preset": "purple", "icon": "/assets/icons/calculation.svg"),
   "动态规划": ("preset": "magenta", "icon": "/assets/icons/app-connectivity.svg"),
   "线性代数": ("preset": "red", "icon": "/assets/icons/matrix.svg"),
+  "字符串": ("preset": "green", "icon": "/assets/icons/array--strings.svg"),
   "模拟费用流": ("preset": "cyan", "icon": "/assets/icons/flow--modeler--reference.svg"),
 )
 

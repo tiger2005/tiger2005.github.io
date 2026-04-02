@@ -4,7 +4,7 @@
 #show: template-post.with(
   title: "第 38 次 CCF CSP 认证 T4 T5 题解",
   description: "本文包含第 38 次 CCF CSP 认证 T4 “月票发行” 和 T5 “博物馆” 的题解。",
-  tags: ("线性代数", "图论"),
+  tags: ("字符串", "线性代数", "图论"),
   category: "CCF CSP 题解",
   date: datetime(year: 2026, month: 3, day: 30)
 )
