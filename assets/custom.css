@@ -129,7 +129,11 @@
 
 .footer-flex-block a {
   color: white !important;
-  text-decoration: none !important;
+  text-decoration: none;
+}
+
+.footer-flex-block a:hover {
+  text-decoration: underline;
 }
 
 @media (min-width: 769px) {
@@ -142,7 +146,13 @@
   }
 }
 
-@media (max-width: 768px) {
+@media (min-width: 577px) {
+  .footer-flex-outer > .footer-flex-block {
+    flex: 0 0 6rem;
+  }
+}
+
+@media (max-width: 576px) {
   .footer-content, .footer-flex-outer {
     flex-direction: column;
   }

@@ -45,7 +45,9 @@
     })
     html.div(class: "footer-flex-block", {
       html.div({
-        "本页面由 Typst 编译于 " + datetime.today().display("[year] 年 [month padding:none] 月 [day padding:none] 日")
+        "本页面由 "
+        link("https://typst.app/")[Typst]
+        " 编译于 " + datetime.today().display("[year] 年 [month padding:none] 月 [day padding:none] 日")
       })
       html.div(
         link("https://github.com/tiger2005/tiger2005.github.io/blob/master/" + current-source-path)[查看源代码]
