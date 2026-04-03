@@ -57,7 +57,7 @@
       html.div({
         "本页面被访问了 "
         link("https://vercount.one/", {
-          html.span(id: "vercount-one-counter")
+          html.span(id: "vercount_value_page_pv")
         })
         " 次。"
       })
