@@ -156,6 +156,12 @@
           for (js-src) in custom-script {
             html.script(type: "module", src: js-src)
           }
+
+          html.script(
+            defer: true,
+            type: "text/javascript",
+            src: "https://events.vercount.one/js"
+          )
         })
 
         html.body({

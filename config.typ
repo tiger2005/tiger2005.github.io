@@ -54,6 +54,13 @@
         link("https://github.com/tiger2005/carbon-typst-blog")[Carbon Typst Blog]
         " 搭建。"
       })
+      html.div({
+        "本页面被访问了 "
+        link("https://vercount.one/", {
+          html.span(id: "vercount-one-counter")
+        })
+        " 次。"
+      })
       html.div(
         link("https://github.com/tiger2005/tiger2005.github.io/blob/master/" + current-source-path)[查看本页源代码]
       )
