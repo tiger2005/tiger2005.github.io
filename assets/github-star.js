@@ -1,16 +1,1 @@
-document.addEventListener("DOMContentLoaded", function() {
-  const githubStars = document.querySelectorAll(".github-star");
-  githubStars.forEach(function(starElement) {
-    const repo = starElement.getAttribute("original");
-    fetch(`https://api.github.com/repos/${repo}`)
-      .then(response => response.json())
-      .then(data => {
-        const starCount = data.stargazers_count;
-        starElement.textContent = `★ ${starCount}`;
-      })
-      .catch(error => {
-        console.error("Error fetching GitHub stars:", error);
-        starElement.textContent = "无法加载 Stars";
-      });
-  });
-});
+document.addEventListener("DOMContentLoaded",function(){document.querySelectorAll(".github-star").forEach(function(o){const n=o.getAttribute("original");fetch(`https://api.github.com/repos/${n}`).then(t=>t.json()).then(t=>{const e=t.stargazers_count;o.textContent=`★ ${e}`}).catch(t=>{console.error("Error fetching GitHub stars:",t),o.textContent="无法加载 Stars"})})});
