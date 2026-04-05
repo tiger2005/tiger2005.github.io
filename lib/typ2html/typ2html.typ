@@ -139,8 +139,10 @@
             head-extra
           }
 
-          html.link(rel: "preconnect", href: "https://cdn.jsdelivr.net")
+          html.link(rel: "preconnect", href: "https://cdn.jsdelivr.net", crossorigin: "anonymous")
           html.link(rel: "dns-prefetch", href: "https://cdn.jsdelivr.net")
+          html.link(rel: "preconnect", href: "https://events.vercount.one", crossorigin: "anonymous")
+          html.link(rel: "dns-prefetch", href: "https://events.vercount.one")
 
           make-theme-preload-script()
 
