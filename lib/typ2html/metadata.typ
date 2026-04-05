@@ -60,7 +60,7 @@
   html.meta(name: "generator", content: "Typst")
 
   let page-title = if title != "" and website-title != "" {
-    title + " | " + website-title
+    title + " / " + website-title
   } else if title != "" {
     title
   } else if website-title != "" {

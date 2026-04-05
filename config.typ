@@ -41,6 +41,9 @@
         html.div(
           link("https://space.bilibili.com/350620554")[B 站]
         )
+        html.div(
+          link("https://osu.ppy.sh/users/16296188")[osu!]
+        )
       })
     })
     html.div(class: "footer-flex-block", {
@@ -57,7 +60,7 @@
       html.div({
         "本页面被访问了 "
         link("https://vercount.one/", {
-          html.span(id: "vercount_value_page_pv")
+          html.span(id: "vercount_value_page_pv", "...")
         })
         " 次。"
       })
