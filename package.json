@@ -1,6 +1,9 @@
 {
   "name": "carbon-typst-blog",
   "private": true,
+  "devDependencies": {
+    "esbuild": "^0.25.11"
+  },
   "scripts": {
     "build": "node lib/node/build-html.mjs",
     "build:fast": "npm run build -- --jobs 4",
