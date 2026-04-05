@@ -1951,7 +1951,7 @@ header.nav-menu-open .nav-sidebar {
   outline-offset: -3px;
 }
 
-article :focus-visible, a.footnote-ref-link:focus {
+article :focus-visible, a.footnote-ref-link:focus, footer a:focus-visible {
   outline-offset: 0px;
 }
 
