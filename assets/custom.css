@@ -163,3 +163,56 @@
   }
 }
 
+.about-block ul,
+.about-block ol {
+  margin: 1rem 0 0 0.625rem;
+  padding: 0;
+}
+
+.about-block dl {
+  margin: 1rem 0 0 0;
+}
+
+.about-block dl dt {
+  margin: 1rem 0 0 0;
+  font-weight: 600;
+}
+
+.about-block dl dd {
+  margin: 0 0 0 1rem;
+}
+
+.about-block li {
+  margin-top: 0.5rem;
+  margin-left: 1.5rem;
+  padding: 0;
+}
+
+.about-block ul li:not(:last-child),
+.about-block ol li:not(:last-child) {
+  margin-bottom: 0.5rem;
+}
+
+.about-block ul li p,
+.about-block ol li p {
+  margin: 0.5rem 0;
+}
+
+.about-block a {
+  color: var(--link);
+  text-decoration: none;
+}
+
+.about-block a:hover {
+  color: var(--link-hover);
+}
+
+.about-block a:visited {
+  color: var(--link-visited);
+}
+
+.about-block-list {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 3rem;
+}
