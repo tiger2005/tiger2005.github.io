@@ -60,7 +60,9 @@ rfl
 
 + 先使用 `add_succ` 定理将 `succ a + succ d` 转换为 `succ (succ a + d)`；
 + 然后利用归纳假设 `hd` 将内部的 `succ a + d` 替换为 `succ (a + d)`，此时目标的左侧为 `succ (succ (a + d))`；
-+ 最后再次使用 `add_succ` 定理将右侧也转换为 `succ (succ (a + d))`。完整的代码如下：
++ 最后再次使用 `add_succ` 定理将右侧也转换为 `succ (succ (a + d))`。
+
+完整的代码如下：
 
 ```lean
 induction b with d hd
