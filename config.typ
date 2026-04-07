@@ -10,69 +10,71 @@
   current-source-prefix + "/" + current-page-path
 } + "/index.typ"
 
-#let footer-content = html.div(
-  class: "footer-content",
-  {
-    html.div(class: "footer-flex-outer", {
-      html.div(class: "footer-flex-block", {
-        html.div(
-          link("https://www.luogu.com.cn/user/60864")[洛谷]
-        )
-        html.div(
-          link("https://codeforces.com/profile/tiger2005")[Codeforces]
-        )
-        html.div(
-          link("https://atcoder.jp/users/tiger2005")[AtCoder]
-        )
-        html.div(
-          link("https://loj.ac/u/tiger2005")[LibreOJ]
-        )
-        html.div(
-          link("https://uoj.ac/user/profile/tiger2005")[UOJ]
-        )
-      })
-      html.div(class: "footer-flex-block", {
-        html.div(
-          link("https://github.com/tiger2005")[GitHub]
-        )
-        html.div(
-          link("https://www.zhihu.com/people/tiger2005")[知乎]
-        )
-        html.div(
-          link("https://space.bilibili.com/350620554")[B 站]
-        )
-        html.div(
-          link("https://osu.ppy.sh/users/16296188")[osu!]
-        )
-      })
-    })
-    html.div(class: "footer-flex-block", {
-      html.div({
-        "本页由 "
-        link("https://typst.app/")[Typst]
-        " 于 " + datetime.today().display("[year] 年 [month padding:none] 月 [day padding:none] 日") + "生成。"
-      })
-      html.div({
-        "本博客使用 "
-        link("https://github.com/tiger2005/carbon-typst-blog")[Carbon Typst Blog]
-        " 搭建。"
-      })
-      html.div({
-        "本页面被访问了 "
-        link("https://vercount.one/", {
-          html.span(id: "vercount_value_page_pv", "...")
+#let footer-content = html-guard(() => {
+  html.div(
+    class: "footer-content",
+    {
+      html.div(class: "footer-flex-outer", {
+        html.div(class: "footer-flex-block", {
+          html.div(
+            link("https://www.luogu.com.cn/user/60864")[洛谷]
+          )
+          html.div(
+            link("https://codeforces.com/profile/tiger2005")[Codeforces]
+          )
+          html.div(
+            link("https://atcoder.jp/users/tiger2005")[AtCoder]
+          )
+          html.div(
+            link("https://loj.ac/u/tiger2005")[LibreOJ]
+          )
+          html.div(
+            link("https://uoj.ac/user/profile/tiger2005")[UOJ]
+          )
         })
-        " 次。"
+        html.div(class: "footer-flex-block", {
+          html.div(
+            link("https://github.com/tiger2005")[GitHub]
+          )
+          html.div(
+            link("https://www.zhihu.com/people/tiger2005")[知乎]
+          )
+          html.div(
+            link("https://space.bilibili.com/350620554")[B 站]
+          )
+          html.div(
+            link("https://osu.ppy.sh/users/16296188")[osu!]
+          )
+        })
       })
-      html.div(
-        link("https://github.com/tiger2005/tiger2005.github.io/blob/master/" + current-source-path)[查看本页源代码]
-      )
-      html.div(
-        link("/rss.xml")[RSS 订阅]
-      )
-    })
-  }
-)
+      html.div(class: "footer-flex-block", {
+        html.div({
+          "本页由 "
+          link("https://typst.app/")[Typst]
+          " 于 " + datetime.today().display("[year] 年 [month padding:none] 月 [day padding:none] 日") + "生成。"
+        })
+        html.div({
+          "本博客使用 "
+          link("https://github.com/tiger2005/carbon-typst-blog")[Carbon Typst Blog]
+          " 搭建。"
+        })
+        html.div({
+          "本页面被访问了 "
+          link("https://vercount.one/", {
+            html.span(id: "vercount_value_page_pv", "...")
+          })
+          " 次。"
+        })
+        html.div(
+          link("https://github.com/tiger2005/tiger2005.github.io/blob/master/" + current-source-path)[查看本页源代码]
+        )
+        html.div(
+          link("/rss.xml")[RSS 订阅]
+        )
+      })
+    }
+  )
+})
 
 #let tag-options = (
   "矩阵链乘积问题": ("preset": "blue", "icon": "/assets/icons/data-bin.svg"),
