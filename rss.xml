@@ -5,7 +5,27 @@
   <link>https://tiger2005.github.io/</link>
   <description>tiger2005 的个人博客，记录一些想要分享的内容。</description>
   <language>zh-cn</language>
-  <lastBuildDate>Mon, 30 Mar 2026 00:00:00 GMT</lastBuildDate>
+  <lastBuildDate>Tue, 07 Apr 2026 00:00:00 GMT</lastBuildDate>
+  <item>
+    <title>Natural Number Game 第一部分 / 教程世界</title>
+    <link>https://tiger2005.github.io/posts/natural_number_game/world1/</link>
+    <guid isPermaLink="true">https://tiger2005.github.io/posts/natural_number_game/world1/</guid>
+    <pubDate>Tue, 07 Apr 2026 00:00:00 GMT</pubDate>
+    <description>本文是 Natural Number Game 的第一部分，主要介绍了 Lean 中的基本证明策略，包括 rfl 和 rw 等，并在最终证明了 2 + 2 = 4。</description>
+    <category domain="category">Natural Number Game 合集</category>
+    <category domain="tag">数论</category>
+    <category domain="tag">Lean</category>
+  </item>
+  <item>
+    <title>Natural Number Game 第二部分 / 加法世界</title>
+    <link>https://tiger2005.github.io/posts/natural_number_game/world2/</link>
+    <guid isPermaLink="true">https://tiger2005.github.io/posts/natural_number_game/world2/</guid>
+    <pubDate>Tue, 07 Apr 2026 00:00:00 GMT</pubDate>
+    <description>本文是 Natural Number Game 的第二部分，主要介绍了 Lean 中的归纳法证明策略，并通过一系列关卡证明了加法的交换律与结合律等定理。</description>
+    <category domain="category">Natural Number Game 合集</category>
+    <category domain="tag">数论</category>
+    <category domain="tag">Lean</category>
+  </item>
   <item>
     <title>第 36 次 CCF CSP 认证 T4 T5 题解</title>
     <link>https://tiger2005.github.io/posts/ccf-csp/36/</link>
