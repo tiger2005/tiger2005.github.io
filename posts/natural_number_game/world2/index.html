@@ -97,8 +97,9 @@ rfl</code></pre>
           <ol>
             <li>先使用 <code class="language-text">add_succ</code> 定理将 <code class="language-text">succ a + succ d</code> 转换为 <code class="language-text">succ (succ a + d)</code>；</li>
             <li>然后利用归纳假设 <code class="language-text">hd</code> 将内部的 <code class="language-text">succ a + d</code> 替换为 <code class="language-text">succ (a + d)</code>，此时目标的左侧为 <code class="language-text">succ (succ (a + d))</code>；</li>
-            <li>最后再次使用 <code class="language-text">add_succ</code> 定理将右侧也转换为 <code class="language-text">succ (succ (a + d))</code>。完整的代码如下：</li>
+            <li>最后再次使用 <code class="language-text">add_succ</code> 定理将右侧也转换为 <code class="language-text">succ (succ (a + d))</code>。</li>
           </ol>
+          <p>完整的代码如下：</p>
           <pre><code class="language-lean">induction b with d hd
 repeat rw [add_zero]
 rfl
