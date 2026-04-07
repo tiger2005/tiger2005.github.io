@@ -163,7 +163,7 @@ rfl
 
 = 关卡 7
 
-#note(title: [`add_succ`])[
+#note(title: [`add_succ`（加后继）])[
   *定理* `succ_eq_add_one`：对于所有自然数 $a$，我们有 $"succ"(a) = a + 1$。
 
   ```lean
