@@ -5,7 +5,17 @@
   <link>https://tiger2005.github.io/</link>
   <description>tiger2005 的个人博客，记录一些想要分享的内容。</description>
   <language>zh-cn</language>
-  <lastBuildDate>Tue, 07 Apr 2026 00:00:00 GMT</lastBuildDate>
+  <lastBuildDate>Wed, 08 Apr 2026 00:00:00 GMT</lastBuildDate>
+  <item>
+    <title>Natural Number Game 第五部分 / 幂世界</title>
+    <link>https://tiger2005.github.io/posts/natural_number_game/world5/</link>
+    <guid isPermaLink="true">https://tiger2005.github.io/posts/natural_number_game/world5/</guid>
+    <pubDate>Wed, 08 Apr 2026 00:00:00 GMT</pubDate>
+    <description>本文是 Natural Number Game 的第五部分，主要介绍了 Lean 中的指数相关定理的证明，包括零的零次幂、任何数的一次幂、乘积的幂次等定理。</description>
+    <category domain="category">Natural Number Game 合集</category>
+    <category domain="tag">数论</category>
+    <category domain="tag">Lean</category>
+  </item>
   <item>
     <title>Natural Number Game 第一部分 / 教程世界</title>
     <link>https://tiger2005.github.io/posts/natural_number_game/world1/</link>
@@ -22,6 +32,26 @@
     <guid isPermaLink="true">https://tiger2005.github.io/posts/natural_number_game/world2/</guid>
     <pubDate>Tue, 07 Apr 2026 00:00:00 GMT</pubDate>
     <description>本文是 Natural Number Game 的第二部分，主要介绍了 Lean 中的归纳法证明策略，并通过一系列关卡证明了加法的交换律与结合律等定理。</description>
+    <category domain="category">Natural Number Game 合集</category>
+    <category domain="tag">数论</category>
+    <category domain="tag">Lean</category>
+  </item>
+  <item>
+    <title>Natural Number Game 第三部分 / 乘法世界</title>
+    <link>https://tiger2005.github.io/posts/natural_number_game/world3/</link>
+    <guid isPermaLink="true">https://tiger2005.github.io/posts/natural_number_game/world3/</guid>
+    <pubDate>Tue, 07 Apr 2026 00:00:00 GMT</pubDate>
+    <description>本文是 Natural Number Game 的第三部分，主要介绍了 Lean 中的乘法相关定理的证明，包括乘法的交换律、结合律，以及乘法对于加法满足的分配律等定理。</description>
+    <category domain="category">Natural Number Game 合集</category>
+    <category domain="tag">数论</category>
+    <category domain="tag">Lean</category>
+  </item>
+  <item>
+    <title>Natural Number Game 第四部分 / 蕴含世界</title>
+    <link>https://tiger2005.github.io/posts/natural_number_game/world4/</link>
+    <guid isPermaLink="true">https://tiger2005.github.io/posts/natural_number_game/world4/</guid>
+    <pubDate>Tue, 07 Apr 2026 00:00:00 GMT</pubDate>
+    <description>本文是 Natural Number Game 的第四部分，主要介绍了 Lean 中的蕴含逻辑相关定理的证明，包括 exact 和 apply 策略的使用，以及如何在 Lean 中处理蕴含关系等定理。</description>
     <category domain="category">Natural Number Game 合集</category>
     <category domain="tag">数论</category>
     <category domain="tag">Lean</category>
