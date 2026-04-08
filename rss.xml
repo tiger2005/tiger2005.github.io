@@ -17,6 +17,46 @@
     <category domain="tag">Lean</category>
   </item>
   <item>
+    <title>Natural Number Game 第六部分 / 算法世界</title>
+    <link>https://tiger2005.github.io/posts/natural_number_game/world6/</link>
+    <guid isPermaLink="true">https://tiger2005.github.io/posts/natural_number_game/world6/</guid>
+    <pubDate>Wed, 08 Apr 2026 00:00:00 GMT</pubDate>
+    <description>本文是 Natural Number Game 的第六部分，主要介绍了 Lean 中的算法相关定理的证明，包括和式整理、前驱数、自然数的比较等定理。</description>
+    <category domain="category">Natural Number Game 合集</category>
+    <category domain="tag">数论</category>
+    <category domain="tag">Lean</category>
+  </item>
+  <item>
+    <title>Natural Number Game 第七部分 / 高级加法世界</title>
+    <link>https://tiger2005.github.io/posts/natural_number_game/world7/</link>
+    <guid isPermaLink="true">https://tiger2005.github.io/posts/natural_number_game/world7/</guid>
+    <pubDate>Wed, 08 Apr 2026 00:00:00 GMT</pubDate>
+    <description>本文介绍了 Natural Number Game 中的第七部分，主要涉及一些更复杂的加法定理，例如消去律等。</description>
+    <category domain="category">Natural Number Game 合集</category>
+    <category domain="tag">数论</category>
+    <category domain="tag">Lean</category>
+  </item>
+  <item>
+    <title>Natural Number Game 第八部分 / ≤ 世界</title>
+    <link>https://tiger2005.github.io/posts/natural_number_game/world8/</link>
+    <guid isPermaLink="true">https://tiger2005.github.io/posts/natural_number_game/world8/</guid>
+    <pubDate>Wed, 08 Apr 2026 00:00:00 GMT</pubDate>
+    <description>本文介绍了 Natural Number Game 中的第八部分，主要涉及自然数上的不等关系 ≤ 的一些基本定理，例如反身律、传递律、全序等。</description>
+    <category domain="category">Natural Number Game 合集</category>
+    <category domain="tag">数论</category>
+    <category domain="tag">Lean</category>
+  </item>
+  <item>
+    <title>Natural Number Game 第九部分 / 高级乘法世界</title>
+    <link>https://tiger2005.github.io/posts/natural_number_game/world9/</link>
+    <guid isPermaLink="true">https://tiger2005.github.io/posts/natural_number_game/world9/</guid>
+    <pubDate>Wed, 08 Apr 2026 00:00:00 GMT</pubDate>
+    <description>本文介绍了 Natural Number Game 中的第九部分，主要涉及一些更复杂的乘法定理，例如乘法消去律等。</description>
+    <category domain="category">Natural Number Game 合集</category>
+    <category domain="tag">数论</category>
+    <category domain="tag">Lean</category>
+  </item>
+  <item>
     <title>Natural Number Game 第一部分 / 教程世界</title>
     <link>https://tiger2005.github.io/posts/natural_number_game/world1/</link>
     <guid isPermaLink="true">https://tiger2005.github.io/posts/natural_number_game/world1/</guid>
