@@ -5,7 +5,7 @@
   title: "使用 Typst 完成 Advent of Code 2023 之后，我学到了什么？",
   description: "本文是我在使用 Typst 完成 Advent of Code 2023 之后的一些心得和体会。在这篇文章中，我将分析 Typst 在编写算法竞赛题目方面的局限性，并分享一些有趣的实现细节。",
   tags: ("Typst", ),
-  category: "Natural Number Game 合集",
+  category: "",
   date: datetime(year: 2026, month: 4, day: 13)
 )
 
