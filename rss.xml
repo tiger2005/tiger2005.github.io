@@ -5,7 +5,16 @@
   <link>https://tiger2005.github.io/</link>
   <description>tiger2005 的个人博客，记录一些想要分享的内容。</description>
   <language>zh-cn</language>
-  <lastBuildDate>Wed, 08 Apr 2026 00:00:00 GMT</lastBuildDate>
+  <lastBuildDate>Mon, 13 Apr 2026 00:00:00 GMT</lastBuildDate>
+  <item>
+    <title>使用 Typst 完成 Advent of Code 2023 之后，我学到了什么？</title>
+    <link>https://tiger2005.github.io/posts/aoc2023-typst/</link>
+    <guid isPermaLink="true">https://tiger2005.github.io/posts/aoc2023-typst/</guid>
+    <pubDate>Mon, 13 Apr 2026 00:00:00 GMT</pubDate>
+    <description>本文是我在使用 Typst 完成 Advent of Code 2023 之后的一些心得和体会。在这篇文章中，我将分析 Typst 在编写算法竞赛题目方面的局限性，并分享一些有趣的实现细节。</description>
+    <category domain="category">Natural Number Game 合集</category>
+    <category domain="tag">Typst</category>
+  </item>
   <item>
     <title>Natural Number Game 第五部分 / 幂世界</title>
     <link>https://tiger2005.github.io/posts/natural_number_game/world5/</link>
