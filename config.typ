@@ -86,6 +86,7 @@
   "字符串": ("preset": "green", "icon": "/assets/icons/array--strings.svg"),
   "模拟费用流": ("preset": "cyan", "icon": "/assets/icons/flow--modeler--reference.svg"),
   "Lean": ("preset": "purple", "icon": "/assets/icons/square-fill.svg"),
+  "Typst": ("preset": "teal", "icon": "/assets/icons/pen.svg"),
 )
 
 #let render-tag-link = render-tag-link.with(tag-options: tag-options)
