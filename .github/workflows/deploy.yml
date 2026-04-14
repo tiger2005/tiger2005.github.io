@@ -40,6 +40,5 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          projectName: tiger2005
-          directory: ./
-          workingDirectory: ./_site
+          command: pages deploy ./_site --project-name=tiger2005
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
